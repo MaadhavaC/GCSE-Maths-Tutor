@@ -1,6 +1,6 @@
 // Maths engine for the Maths Hint Ladder.
 // This file holds the shared tools. The topics themselves live in the topics/ folder,
-// one file per strand of the Key Stage 3 curriculum (Years 7 to 9).
+// one file per strand of the curriculum (Years 7 to 10).
 //
 // The engine does three jobs:
 //   1. reads what the student types (a tiny "parser"),
@@ -131,7 +131,8 @@
   const FROM_SUPER = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
   function normalise(text) {
     return String(text)
-      .replace(/pi/gi, 'π')
+      .replace(/sqrt/gi, '√')
+    .replace(/pi/gi, 'π')
       .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, m => '^' + m.split('').map(c => FROM_SUPER[c]).join(''))
       .replace(/[−–]/g, '-')
       .replace(/[×·]/g, '*')
@@ -161,7 +162,7 @@
       } else if (/[a-z]/.test(ch)) {
         raw.push({ type: 'var', name: ch });
         i++;
-      } else if ('+-*/^()'.includes(ch)) {
+      } else if ('+-*/^()√'.includes(ch)) {
         raw.push({ type: 'op', value: ch });
         i++;
       } else {
@@ -169,11 +170,11 @@
       }
     }
 
-    // In algebra "3x" means 3 × x and "2(x+1)" means 2 × (x+1).
+    // In algebra "3x" means 3 × x, "2(x+1)" means 2 × (x+1) and "6√2" means 6 × √2.
     // Put the hidden × signs back in.
     const tokens = [];
     const endsValue = t => t.type === 'num' || t.type === 'var' || (t.type === 'op' && t.value === ')');
-    const startsValue = t => t.type === 'num' || t.type === 'var' || (t.type === 'op' && t.value === '(');
+    const startsValue = t => t.type === 'num' || t.type === 'var' || (t.type === 'op' && (t.value === '(' || t.value === '√'));
     raw.forEach((t, k) => {
       if (k > 0 && endsValue(raw[k - 1]) && startsValue(t)) tokens.push({ type: 'op', value: '*' });
       tokens.push(t);
@@ -184,7 +185,7 @@
   // Recursive descent parser. Each rule handles one level of BIDMAS:
   //   expr   = term (+ or − term)...         addition and subtraction last
   //   term   = unary (× or ÷ unary)...       then multiplication and division
-  //   unary  = − unary | power               a minus sign in front
+  //   unary  = − unary | √ unary | power     a minus sign or square root in front
   //   power  = atom (^ unary)                indices first
   //   atom   = number | letter | ( expr )    brackets before everything
   function parse(text) {
@@ -220,6 +221,7 @@
     function unary() {
       if (isOp('-')) { pos++; const inner = unary(); return env => -inner(env); }
       if (isOp('+')) { pos++; return unary(); }
+      if (isOp('√')) { pos++; const inner = unary(); return env => Math.sqrt(inner(env)); }
       return power();
     }
 
@@ -507,6 +509,148 @@
     };
   }
 
+  // Quadratic equations: two solutions, like "x = 2, x = −3" or "2 or −3".
+  // opts.dp: the solutions have been rounded to this many decimal places.
+  function rootsChecker(roots, opts) {
+    opts = opts || {};
+    const want = roots.filter((r, i) => !roots.slice(0, i).some(o => sameNumber(o, r)));
+    const target = r => opts.dp === undefined ? r : roundDp(r, opts.dp);
+    const NUMBER = /-?\d*\.?\d+(?:\/\d+)?/g;
+    return function (input) {
+      const s = normalise(input).toLowerCase().replace(/x\s*=/g, ' ').replace(/\b(or|and)\b/g, ',');
+      const found = s.match(NUMBER);
+      if (!found || s.replace(NUMBER, '').replace(/[\s,;]/g, '')) {
+        return result('invalid', 'Give ' + (want.length > 1 ? 'both solutions' : 'the solution') + ', like x = 2, x = −3.');
+      }
+      const given = found.map(t => parse(t).evaluate({}));
+      const matches = (g, r) => sameNumber(g, target(r));
+      const extra = given.filter(g => !want.some(r => matches(g, r)));
+      const hits = want.filter(r => given.some(g => matches(g, r)));
+      if (!extra.length && hits.length === want.length) return result('correct', 'Correct!');
+      if (opts.dp !== undefined && given.length === want.length &&
+        want.every(r => given.some(g => Math.abs(g - r) < 0.5 * Math.pow(10, -opts.dp) + 1e-9))) {
+        return result('almost', 'Nearly. Round both answers to ' + opts.dp + ' decimal places.');
+      }
+      if (!extra.length) return result('almost', 'That’s right, but there’s another solution too. A quadratic usually has two.');
+      if (given.length === want.length && given.every(g => want.some(r => matches(-g, r)))) {
+        return result('wrong', 'The numbers are right but the signs are wrong. If x + 3 = 0, then x = −3.');
+      }
+      if (hits.length) return result('wrong', 'One of those is right. Check the other by putting it back into the equation.');
+      return result('wrong', NOT_QUITE);
+    };
+  }
+
+  // Surds in their simplest form, k√m (m = 1 means the answer is the whole number k)
+  function surdChecker(k, m, mistakes) {
+    const target = k * Math.sqrt(m);
+    return function (input) {
+      let value;
+      try { value = readNumber(input); } catch (e) {
+        return result('invalid', 'Type a surd like 3√2. Use the √ key, or type sqrt, like 3sqrt2.');
+      }
+      if (!sameNumber(value, target)) {
+        for (const mk of mistakes || []) {
+          if (sameNumber(value, mk.value)) return result('wrong', mk.message);
+        }
+        if (Math.abs(value - target) < 0.01) return result('almost', 'That’s a rounded decimal. Give the exact answer using √.');
+        return result('wrong', NOT_QUITE);
+      }
+      const s = normalise(input).replace(/\s+/g, '').replace(/\*/g, '').replace(/√\((\d+)\)/g, '√$1');
+      if (m === 1) return /^\d+$/.test(s) ? result('correct', 'Correct!') : result('almost', 'Right value! Now simplify it to a whole number.');
+      const form = s.match(/^(\d*)√(\d+)$/);
+      if (!form) return result('almost', 'Right value! Now write it as one simplified surd, like 3√2.');
+      if (Number(form[2]) !== m) return result('almost', 'Right value, but it can be simplified further. Look for a square number that divides into the number under the √.');
+      return result('correct', 'Correct!');
+    };
+  }
+
+  // Coordinates like (−3, 4)
+  function pointChecker(x, y) {
+    const NUMBER = '(-?\\d*\\.?\\d+(?:\\/\\d+)?)';
+    return function (input) {
+      const s = normalise(input).toLowerCase().replace(/[xy]\s*=/g, '').replace(/[()\s]/g, '');
+      const m = s.match(new RegExp('^' + NUMBER + '[,;]' + NUMBER + '$'));
+      if (!m) return result('invalid', 'Write the coordinates like (−3, 4): the x value first, then the y value.');
+      const gx = parse(m[1]).evaluate({}), gy = parse(m[2]).evaluate({});
+      const okX = sameNumber(gx, x), okY = sameNumber(gy, y);
+      if (okX && okY) return result('correct', 'Correct!');
+      if (sameNumber(gx, y) && sameNumber(gy, x)) return result('wrong', 'You’ve swapped them round. The x coordinate comes first.');
+      if (okY && sameNumber(-gx, x)) return result('wrong', 'The y coordinate is right, but check the sign of x. In (x + 3)², the turning point is at x = −3.');
+      if (okX) return result('wrong', 'The x coordinate is right. Check the y coordinate.');
+      if (okY) return result('wrong', 'The y coordinate is right. Check the x coordinate.');
+      return result('wrong', NOT_QUITE);
+    };
+  }
+
+  // ---------- Diagrams ----------
+  // Some questions come with a small SVG picture. Topic files build them with these helpers.
+  // Colours come from the page's CSS (the dg-* classes), so diagrams follow light and dark mode.
+  // Points are { x, y } in SVG units, with y going down the screen.
+
+  let diagramCount = 0;
+  const r1 = n => Math.round(n * 10) / 10;
+
+  function escapeXml(text) {
+    return String(text).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  }
+
+  const draw = {
+    // The whole picture. label describes it for screen readers.
+    svg: (width, height, label, parts) =>
+      '<svg viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + escapeXml(label) + '">' + parts.join('') + '</svg>',
+    line: (a, b, cls) => '<line x1="' + r1(a.x) + '" y1="' + r1(a.y) + '" x2="' + r1(b.x) + '" y2="' + r1(b.y) + '" class="' + (cls || 'dg-line') + '"/>',
+    circle: (c, r, cls) => '<circle cx="' + r1(c.x) + '" cy="' + r1(c.y) + '" r="' + r1(r) + '" class="' + (cls || 'dg-line') + '"/>',
+    dot: p => '<circle cx="' + r1(p.x) + '" cy="' + r1(p.y) + '" r="3.5" class="dg-dot"/>',
+    text: (p, words, cls, anchor) => '<text x="' + r1(p.x) + '" y="' + r1(p.y) + '" class="' + (cls || 'dg-text') + '" text-anchor="' + (anchor || 'middle') + '" dominant-baseline="central">' + escapeXml(words) + '</text>',
+    // An arc marking the angle at vertex v between the lines to a and b, with a label in it.
+    // known: true for a given angle, false for the one to find (drawn in the topic colour).
+    angle(v, a, b, label, known, radius) {
+      const r = radius || 24;
+      const t1 = Math.atan2(a.y - v.y, a.x - v.x);
+      let turn = Math.atan2(b.y - v.y, b.x - v.x) - t1;
+      while (turn <= -Math.PI) turn += 2 * Math.PI;
+      while (turn > Math.PI) turn -= 2 * Math.PI;
+      const start = { x: v.x + r * Math.cos(t1), y: v.y + r * Math.sin(t1) };
+      const end = { x: v.x + r * Math.cos(t1 + turn), y: v.y + r * Math.sin(t1 + turn) };
+      const mid = t1 + turn / 2, gap = r + (Math.abs(turn) < 0.6 ? 20 : 14);
+      return '<path d="M' + r1(start.x) + ' ' + r1(start.y) + ' A' + r + ' ' + r + ' 0 0 ' + (turn > 0 ? 1 : 0) + ' ' + r1(end.x) + ' ' + r1(end.y) + '" class="dg-mark' + (known ? '' : ' dg-find') + '"/>' +
+        draw.text({ x: v.x + gap * Math.cos(mid), y: v.y + gap * Math.sin(mid) }, label, known ? 'dg-value' : 'dg-unknown');
+    },
+    // The graph of y = fn(x) on a grid. Options: xmin, xmax, ymin, ymax (the ranges must include 0),
+    // fn, label, and optionally line (a dashed line y = line) and dots (points to mark).
+    graph(o) {
+      const W = 320, H = 320, pad = 26;
+      const sx = x => pad + (x - o.xmin) / (o.xmax - o.xmin) * (W - 2 * pad);
+      const sy = y => H - pad - (y - o.ymin) / (o.ymax - o.ymin) * (H - 2 * pad);
+      const step = span => span <= 12 ? 1 : span <= 24 ? 2 : 5;
+      const ystep = step(o.ymax - o.ymin), xstep = step(o.xmax - o.xmin);
+      const sign = n => n < 0 ? MINUS + Math.abs(n) : String(n);
+      const parts = [];
+      for (let x = Math.ceil(o.xmin); x <= o.xmax; x++) parts.push(draw.line({ x: sx(x), y: sy(o.ymin) }, { x: sx(x), y: sy(o.ymax) }, 'dg-grid'));
+      for (let y = Math.ceil(o.ymin); y <= o.ymax; y++) parts.push(draw.line({ x: sx(o.xmin), y: sy(y) }, { x: sx(o.xmax), y: sy(y) }, 'dg-grid'));
+      parts.push(draw.line({ x: sx(o.xmin), y: sy(0) }, { x: sx(o.xmax), y: sy(0) }, 'dg-axis'));
+      parts.push(draw.line({ x: sx(0), y: sy(o.ymin) }, { x: sx(0), y: sy(o.ymax) }, 'dg-axis'));
+      for (let x = Math.ceil(o.xmin / xstep) * xstep; x <= o.xmax; x += xstep) if (x) parts.push(draw.text({ x: sx(x), y: sy(0) + 11 }, sign(x), 'dg-tick'));
+      for (let y = Math.ceil(o.ymin / ystep) * ystep; y <= o.ymax; y += ystep) if (y) parts.push(draw.text({ x: sx(0) - 5, y: sy(y) }, sign(y), 'dg-tick', 'end'));
+      parts.push(draw.text({ x: sx(o.xmax) + 10, y: sy(0) }, 'x', 'dg-axis-name'));
+      parts.push(draw.text({ x: sx(0), y: sy(o.ymax) - 12 }, 'y', 'dg-axis-name'));
+      const clip = 'dg-clip-' + (++diagramCount);
+      parts.push('<clipPath id="' + clip + '"><rect x="' + pad + '" y="' + pad + '" width="' + (W - 2 * pad) + '" height="' + (H - 2 * pad) + '"/></clipPath>');
+      if (o.line !== undefined) {
+        parts.push('<g clip-path="url(#' + clip + ')">' + draw.line({ x: sx(o.xmin), y: sy(o.line) }, { x: sx(o.xmax), y: sy(o.line) }, 'dg-dash') + '</g>');
+        parts.push(draw.text({ x: sx(o.xmax) - 2, y: sy(o.line) - 10 }, 'y = ' + sign(o.line), 'dg-pen', 'end'));
+      }
+      const pts = [];
+      for (let i = 0; i <= 240; i++) {
+        const x = o.xmin + (o.xmax - o.xmin) * i / 240;
+        pts.push(r1(sx(x)) + ',' + r1(sy(o.fn(x))));
+      }
+      parts.push('<g clip-path="url(#' + clip + ')"><polyline points="' + pts.join(' ') + '" class="dg-curve"/></g>');
+      for (const d of o.dots || []) parts.push(draw.dot({ x: sx(d.x), y: sy(d.y) }));
+      return draw.svg(W, H, o.label, parts);
+    }
+  };
+
   function bracketCount(text) {
     return (String(text).match(/\(/g) || []).length;
   }
@@ -519,11 +663,13 @@
   //
   // A question has:
   //   prompt     the question text
-  //   kind       what to type: 'number', 'expression', 'fraction', 'ratio', 'inequality', 'pair', 'standard', 'primes'
+  //   kind       what to type: 'number', 'expression', 'fraction', 'ratio', 'inequality', 'pair', 'standard', 'primes',
+  //              'roots' (two solutions of a quadratic), 'surd' or 'point' (coordinates)
   //   hints      three hints, each a bit more helpful than the last
   //   solution   the full worked solution, one line per step
   //   answer     the final answer as text
   //   check      a function that marks what the student typed
+  //   diagram    (optional) an SVG picture drawn with the draw helpers
 
   const STRANDS = [
     { id: 'number', name: 'Number' },
@@ -557,7 +703,9 @@
     MINUS, num, numB, money, frac, sup, poly, terms, xPlus, bracketCount, countTerms,
     parse, equivalent, sameNumber,
     numberChecker, expressionChecker, fractionChecker, ratioChecker, inequalityChecker,
-    pairChecker, standardFormChecker, primeFactorChecker
+    pairChecker, standardFormChecker, primeFactorChecker, rootsChecker, surdChecker, pointChecker,
+    // drawing diagrams
+    draw
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.MathsEngine = api;
