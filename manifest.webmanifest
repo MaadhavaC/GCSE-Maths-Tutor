@@ -1,8 +1,8 @@
 {
-  "name": "Maths Hint Ladder",
-  "short_name": "Hint Ladder",
-  "description": "Key Stage 3 maths practice (Years 7 to 9) that teaches with a ladder of hints before showing the answer.",
-  "id": "./",
+  "name": "GCSE Maths Tutor",
+  "short_name": "GCSE Maths Tutor",
+  "description": "Maths practice for Years 7 to 10, from Key Stage 3 into GCSE, that teaches with a ladder of hints before showing the answer.",
+  "lang": "en-GB",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -14,9 +14,6 @@
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ],
-  "shortcuts": [
-    { "name": "Quick quiz", "url": "./#quiz", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "My progress", "url": "./#progress", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }
+
