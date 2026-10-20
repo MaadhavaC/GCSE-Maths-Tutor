@@ -1,19 +1,15 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Maths Hint Ladder</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>GCSE Maths Tutor</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#1b2a41">
-<meta name="description" content="Key Stage 3 maths practice (Years 7 to 9) that teaches with a ladder of hints before showing the answer.">
-<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="description" content="Maths practice for Years 7 to 10, from Key Stage 3 into GCSE, that teaches with a ladder of hints before showing the answer.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Hint Ladder">
+<meta name="apple-mobile-web-app-title" content="GCSE Maths Tutor">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Kalam:wght@400;700&family=STIX+Two+Text:ital,wght@0,500;1,500&display=swap">
@@ -38,6 +34,15 @@
   --warn: #8a5a00;
   --warn-bg: #fff2cc;
 
+  /* One colour per strand, so you can tell at a glance which part of maths you're in */
+  --s-number: #2563c9;
+  --s-algebra: #6d3fd0;
+  --s-ratio: #b35900;
+  --s-geometry: #0f7a52;
+  --s-stats: #b8326f;
+  --on-strand: #ffffff;
+  --strand: var(--s-algebra);
+
   --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --font-maths: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
@@ -50,6 +55,7 @@
     --paper: #0e1621; --grid: #182434; --card: #142030; --ink: #e5ecf4; --muted: #95a5ba;
     --line: #273950; --accent: #7d9fff; --accent-ink: #0b1220; --pen: #52d1b8; --margin: #e2857c;
     --good: #6fd697; --good-bg: #153223; --bad: #ff8a7d; --bad-bg: #3a1a17; --warn: #f1c35a; --warn-bg: #3a2e0f;
+    --s-number: #7aa7ff; --s-algebra: #b49aff; --s-ratio: #ffaa5c; --s-geometry: #4fd39c; --s-stats: #ff86b8; --on-strand: #0b1220;
     color-scheme: dark;
   }
 }
@@ -57,8 +63,16 @@
   --paper: #0e1621; --grid: #182434; --card: #142030; --ink: #e5ecf4; --muted: #95a5ba;
   --line: #273950; --accent: #7d9fff; --accent-ink: #0b1220; --pen: #52d1b8; --margin: #e2857c;
   --good: #6fd697; --good-bg: #153223; --bad: #ff8a7d; --bad-bg: #3a1a17; --warn: #f1c35a; --warn-bg: #3a2e0f;
+  --s-number: #7aa7ff; --s-algebra: #b49aff; --s-ratio: #ffaa5c; --s-geometry: #4fd39c; --s-stats: #ff86b8; --on-strand: #0b1220;
   color-scheme: dark;
 }
+
+/* --strand is the colour of whichever strand an element (or the whole page) belongs to */
+[data-strand="number"] { --strand: var(--s-number); }
+[data-strand="algebra"] { --strand: var(--s-algebra); }
+[data-strand="ratio"] { --strand: var(--s-ratio); }
+[data-strand="geometry"] { --strand: var(--s-geometry); }
+[data-strand="stats"] { --strand: var(--s-stats); }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -80,7 +94,7 @@ body {
 .wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 20px; }
 
 h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
-h1 { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.01em; }
+h1 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.01em; }
 h2 { font-size: 1.3rem; font-weight: 600; }
 h3 { font-size: 1.05rem; font-weight: 600; }
 p { margin: 0; }
@@ -92,8 +106,7 @@ button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* ----- Header and tabs ----- */
-header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
-header p { max-width: 46ch; }
+header { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: 12px 24px; }
 .tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
 .tabs button { border: 0; background: transparent; padding: 8px 16px; border-radius: 999px; font-weight: 700; color: var(--muted); }
 .tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
@@ -101,18 +114,7 @@ header p { max-width: 46ch; }
 /* ----- Controls row ----- */
 .controls { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: end; }
 .group { display: grid; gap: 6px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip {
-  border: 1.5px solid var(--line); background: var(--card); border-radius: 8px;
-  padding: 6px 12px; text-align: left; display: grid; line-height: 1.25;
-}
-.chip small { font-family: var(--font-maths); color: var(--muted); font-size: 0.9rem; }
-.chip .year { font-family: var(--font-body); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; color: var(--pen); }
-.pills { display: flex; flex-wrap: wrap; gap: 6px; }
-.pills button { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 6px 14px; font-weight: 700; color: var(--muted); }
-.pills button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .type-tip { font-size: 0.9rem; color: var(--muted); margin-top: -8px; }
-.chip[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--card); }
 .seg button { border: 0; background: transparent; padding: 8px 14px; font-weight: 700; color: var(--muted); }
 .seg button + button { border-left: 1.5px solid var(--line); }
@@ -184,6 +186,30 @@ details.learn[open] summary { margin-bottom: 10px; }
 .tally strong { color: var(--ink); }
 
 /* ----- Quiz ----- */
+.quiz-setup { gap: 18px; border-top: 6px solid var(--accent); }
+.quiz-intro { display: grid; gap: 8px; }
+.quiz-intro h2 { font-size: 1.6rem; font-weight: 800; }
+.quiz-facts { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.quiz-facts li {
+  font-size: 0.85rem; font-weight: 700; padding: 4px 12px; border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--card)); color: var(--accent);
+}
+.quiz-fields { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: 14px; }
+.select {
+  width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid var(--line);
+  background: var(--paper); font-weight: 700;
+}
+.select:focus { border-color: var(--accent); outline: none; }
+.quiz-go { justify-self: start; font-size: 1.05rem; padding: 12px 28px; }
+.quiz-tip {
+  font-size: 0.95rem; color: var(--muted); line-height: 1.5;
+  padding: 12px 14px; border-radius: 8px; background: var(--paper); border-left: 4px solid var(--pen);
+}
+.quiz-tip strong { color: var(--ink); display: block; margin-bottom: 2px; }
+@media (max-width: 760px) {
+  .quiz-fields { grid-template-columns: minmax(0, 1fr); }
+  .quiz-go { justify-self: stretch; }
+}
 .quiz-progress { height: 8px; background: var(--paper); border-radius: 999px; overflow: hidden; border: 1px solid var(--line); }
 .quiz-progress span { display: block; height: 100%; background: var(--accent); transition: width 0.25s ease; }
 .big-score { font-family: var(--font-display); font-size: 3rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -204,17 +230,21 @@ tr.strand-row td { font-weight: 700; background: var(--paper); font-size: 0.8rem
 textarea.csv { width: 100%; min-height: 120px; font-family: ui-monospace, monospace; font-size: 0.8rem; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; color: var(--ink); padding: 8px; }
 
 footer { font-size: 0.9rem; color: var(--muted); }
-code { font-family: ui-monospace, monospace; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
 
-/* Topic picker: open on wide screens, folds away on phones */
-details.picker { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
-details.picker > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; list-style: none; }
-details.picker > summary::-webkit-details-marker { display: none; }
-details.picker > summary strong { font-family: var(--font-display); font-weight: 600; }
-details.picker > summary .picker-change { margin-left: auto; color: var(--accent); font-weight: 700; font-size: 0.9rem; }
-details.picker[open] > summary .picker-change::after { content: " ▴"; }
-details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
-.picker-body { display: grid; gap: 16px; margin-top: 14px; }
+/* Topic bar: the current topic (tap it to open the topic menu) and the level */
+.topic-bar {
+  display: flex; flex-wrap: wrap; align-items: end; gap: 12px 20px;
+  background: var(--card); border: 1px solid var(--line); border-left: 5px solid var(--strand);
+  border-radius: var(--radius); padding: 12px 16px;
+}
+.topic-current {
+  flex: 1 1 260px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 12px;
+  text-align: left; border: 1.5px solid var(--line); background: var(--paper); border-radius: 8px; padding: 6px 12px;
+}
+.topic-current:hover { border-color: var(--strand); }
+.topic-current .label { grid-column: 1; }
+.topic-current strong { grid-column: 1; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; line-height: 1.25; }
+.topic-current .topic-change { grid-column: 2; grid-row: 1 / span 2; color: var(--strand); font-weight: 700; font-size: 0.9rem; }
 
 .install { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .install p { font-size: 0.9rem; color: var(--muted); max-width: 32ch; }
@@ -223,7 +253,6 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
 /* Phones: an app-style tab bar along the bottom */
 @media (max-width: 760px) {
   body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
-  header p { display: none; }
   h1 { font-size: 1.5rem; }
   .tabs {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
@@ -237,47 +266,229 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
   .card { padding: 16px; }
 }
 
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+/* ----- Colour ----- */
+/* A stripe of all five strand colours under the header */
+header { padding-bottom: 14px; border-bottom: 4px solid; border-image: linear-gradient(90deg, var(--s-number) 0 20%, var(--s-algebra) 20% 40%, var(--s-ratio) 40% 60%, var(--s-geometry) 60% 80%, var(--s-stats) 80%) 1; }
+details.learn { border-left: 5px solid var(--strand); }
+details.learn summary { color: var(--strand); }
+.learn-body .eg { background: color-mix(in srgb, var(--strand) 9%, var(--card)); }
+#q-card, #quiz-run { border-top: 6px solid var(--strand); }
+#q-topic, #quiz-count { color: var(--strand); }
+.quiz-progress span { background: var(--strand); }
+tr.strand-row td { color: var(--strand); border-left: 5px solid var(--strand); background: color-mix(in srgb, var(--strand) 10%, var(--card)); }
+.big-score { color: var(--strand); }
+
+/* ----- Topic menu: a panel that slides in from the left ----- */
+/* Title row: app icon and title. The Topics button sits above the tabs on the right. */
+/* The Topics button lines up over the last tab, My progress */
+.header-right { display: grid; justify-items: end; gap: 10px; margin-left: auto; }
+.title-row { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px 14px; }
+.app-icon { width: 56px; height: 56px; border-radius: 13px; flex: none; }
+.title-row h1 { white-space: nowrap; }
+.menu-btn { flex: none; display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--line); background: var(--card); border-radius: 8px; padding: 6px 12px; font-weight: 700; }
+.menu-btn:hover { border-color: var(--strand); color: var(--strand); }
+.menu-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+@media (max-width: 760px) {
+  .app-icon { width: 42px; height: 42px; border-radius: 10px; }
+  /* On phones the tabs move to the bottom of the screen. The Background and Topics buttons
+     go on their own line under the title when there isn't room beside it. */
+  header { flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+  .header-buttons { margin-top: 0; }
+  .title-row { min-width: 0; }
+  .title-row h1 { font-size: 1.75rem; }
+}
+dialog.menu {
+  margin: 0; inset: 0 auto 0 0; height: 100%; max-height: 100%; width: min(380px, 88vw);
+  border: 0; border-right: 1px solid var(--line); padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  background: var(--card); color: var(--ink); overflow: hidden;
+}
+/* The heading and search box stay put; only the list of topics scrolls */
+dialog.menu[open] { display: flex; flex-direction: column; gap: 14px; animation: menu-in 0.2s ease-out; }
+#menu-list { flex: 1; min-height: 0; overflow-y: auto; margin: 0 -6px; padding: 0 6px 8px; }
+dialog.menu::backdrop { background: rgba(10, 18, 30, 0.45); }
+@keyframes menu-in { from { transform: translateX(-100%); } to { transform: none; } }
+.menu-head { display: flex; justify-content: space-between; align-items: center; }
+.menu-close { border: 0; background: transparent; font-size: 1.3rem; width: 40px; height: 40px; border-radius: 8px; color: var(--muted); }
+.menu-close:hover { background: var(--paper); color: var(--ink); }
+
+/* ----- Background picker ----- */
+/* Background and Topics sit level with the title; the tabs go underneath, beside the intro */
+.header-buttons { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+dialog.sheet {
+  width: min(600px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); overflow-y: auto;
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px;
+  background: var(--card); color: var(--ink);
+}
+dialog.sheet[open] { display: grid; gap: 18px; }
+dialog.sheet::backdrop { background: rgba(10, 18, 30, 0.45); }
+.bg-section { display: grid; gap: 10px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+.swatch-wrap { position: relative; }
+.swatch {
+  width: 100%; display: grid; gap: 6px; padding: 6px; text-align: left;
+  border: 2px solid var(--line); border-radius: 10px; background: var(--card); font-size: 0.85rem; font-weight: 700;
+}
+.swatch:hover { border-color: var(--muted); }
+.swatch[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.swatch-preview { height: 56px; border-radius: 6px; border: 1px solid var(--line); }
+.swatch-preview.is-paper {
+  background-color: var(--paper); background-size: 11px 11px;
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+}
+.swatch-remove {
+  position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 0.8rem; line-height: 1;
+}
+.swatch-remove:hover { color: var(--bad); border-color: var(--bad); }
+.bg-maker { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: end; }
+.bg-maker input[type="color"] { width: 64px; height: 40px; padding: 2px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--card); cursor: pointer; }
+.file-btn { position: relative; cursor: pointer; }
+.file-btn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.file-btn:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.bg-note:empty { display: none; }
+.bg-foot { justify-content: space-between; }
+
+/* With your own background, text that sits straight on it gets a soft panel behind it.
+   (No blur on the header: it would trap the phone tab bar, which is fixed to the screen.) */
+body.custom-bg header {
+  background: color-mix(in srgb, var(--card) 94%, transparent);
+  border-radius: var(--radius) var(--radius) 0 0; padding: 14px 16px; box-shadow: inset 0 0 0 1px var(--line);
+}
+body.custom-bg .home-areas h2, body.custom-bg footer {
+  justify-self: start; background: color-mix(in srgb, var(--card) 90%, transparent); backdrop-filter: blur(8px);
+  padding: 4px 12px; border-radius: 8px;
+}
+@media (max-width: 760px) {
+  #bg-btn .btn-label { display: none; }
+}
+.menu-search { width: 100%; padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--paper); }
+.menu-search:focus { border-color: var(--accent); outline: none; }
+.menu-year { display: flex; align-items: center; gap: 12px; }
+.menu-group { display: grid; gap: 4px; }
+.menu-group + .menu-group { margin-top: 10px; }
+.menu-group + .menu-group { margin-top: 4px; }
+.menu-group h3 { font-size: 0.8rem; }
+/* Each area heading folds its topics away or opens them */
+.menu-toggle {
+  width: 100%; display: flex; align-items: center; gap: 8px; text-align: left;
+  border: 0; border-bottom: 2px solid var(--strand); background: transparent; border-radius: 6px 6px 0 0;
+  padding: 9px 6px; color: var(--strand); font: inherit; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
+}
+.menu-toggle:hover { background: color-mix(in srgb, var(--strand) 8%, var(--card)); }
+.menu-toggle::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--strand); flex: none; }
+.menu-toggle .count { margin-left: auto; color: var(--muted); font-weight: 400; letter-spacing: 0.02em; text-transform: none; }
+.menu-toggle .chevron { color: var(--muted); transition: transform 0.15s; }
+.menu-toggle[aria-expanded="true"] .chevron { transform: rotate(90deg); }
+.menu-items { display: grid; gap: 4px; padding-top: 4px; }
+.menu-item { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 10px; width: 100%; text-align: left; border: 0; border-left: 4px solid transparent; background: transparent; border-radius: 6px; padding: 7px 10px; line-height: 1.3; }
+.menu-item:hover { background: color-mix(in srgb, var(--strand) 9%, var(--card)); }
+.menu-item[aria-current="true"] { background: color-mix(in srgb, var(--strand) 15%, var(--card)); border-left-color: var(--strand); font-weight: 700; }
+.menu-item small { grid-column: 1; font-family: var(--font-maths); color: var(--muted); font-weight: 400; }
+.menu-item .meta { grid-column: 2; grid-row: 1 / span 2; text-align: right; font-size: 0.75rem; color: var(--muted); font-weight: 400; display: grid; gap: 2px; }
+.menu-item .meta .year { color: var(--strand); font-weight: 700; letter-spacing: 0.04em; }
+.menu-item .meta .done { color: var(--good); }
+
+/* ----- Home page ----- */
+a.title-row { color: inherit; text-decoration: none; border-radius: 10px; }
+.home { display: grid; gap: 20px; }
+.hero-text { display: grid; gap: 12px; }
+.hero h2 { font-size: 1.6rem; font-weight: 800; }
+.home-stats { display: flex; flex-wrap: wrap; gap: 12px; }
+.stat { flex: 1 1 150px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; display: grid; gap: 2px; }
+.stat strong { font-family: var(--font-display); font-size: 1.7rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 0.9rem; }
+.home-areas { display: grid; gap: 12px; }
+.area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 12px; }
+.area-card {
+  display: grid; gap: 6px; align-content: start; text-align: left; color: var(--ink);
+  background: var(--card); border: 1px solid var(--line); border-top: 6px solid var(--strand); border-radius: var(--radius); padding: 14px 16px;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.area-card:hover { background: color-mix(in srgb, var(--strand) 8%, var(--card)); border-color: var(--strand); }
+.area-card .name { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; color: var(--strand); }
+.area-card .count { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+.area-card .examples { font-size: 0.9rem; color: var(--muted); line-height: 1.4; }
+.area-card .solved { font-size: 0.85rem; font-weight: 700; color: var(--good); }
+@media (max-width: 760px) {
+  .hero h2 { font-size: 1.35rem; }
+}
+
+/* ----- Diagrams (circle theorems, graphs) ----- */
+.diagram { display: flex; justify-content: center; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+.diagram svg { width: 100%; max-width: 340px; height: auto; overflow: visible; }
+.dg-line { stroke: var(--ink); stroke-width: 2; fill: none; stroke-linecap: round; }
+.dg-grid { stroke: var(--line); stroke-width: 1; }
+.dg-axis { stroke: var(--muted); stroke-width: 1.6; }
+.dg-curve { stroke: var(--strand); stroke-width: 3; fill: none; stroke-linejoin: round; }
+.dg-dash { stroke: var(--pen); stroke-width: 2.2; stroke-dasharray: 7 5; }
+.dg-mark { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+.dg-mark.dg-find { stroke: var(--strand); stroke-width: 2.2; }
+.dg-dot { fill: var(--ink); }
+.dg-text { fill: var(--ink); font-family: var(--font-body); font-size: 15px; font-weight: 700; }
+.dg-value { fill: var(--ink); font-family: var(--font-maths); font-size: 14px; }
+.dg-unknown { fill: var(--strand); font-family: var(--font-maths); font-style: italic; font-size: 18px; font-weight: 500; }
+.dg-tick { fill: var(--muted); font-family: var(--font-body); font-size: 10.5px; }
+.dg-axis-name { fill: var(--muted); font-family: var(--font-maths); font-style: italic; font-size: 15px; }
+.dg-pen { fill: var(--pen); font-family: var(--font-maths); font-size: 13px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } dialog.menu[open] { animation: none; } }
 </style>
-</head>
-<body>
 <div class="wrap">
 
   <header>
     <div style="display:grid;gap:6px">
-      <h1>Maths Hint Ladder</h1>
-      <p class="muted">Key Stage 3 maths, Years 7 to 9, building up to GCSE. Stuck? Climb the hint ladder one rung at a time. The answer only appears at the very top.</p>
+      <a class="title-row" href="#home" id="home-link" aria-label="GCSE Maths Tutor, go to the home page">
+        <img class="app-icon" src="icons/icon-192.png" alt="" width="56" height="56">
+        <h1>GCSE Maths Tutor</h1>
+      </a>
     </div>
     <div class="install" id="install" hidden>
       <button class="btn" id="install-btn" type="button" hidden>Install app</button>
       <p id="install-tip"></p>
     </div>
-    <nav class="tabs" role="tablist" aria-label="Sections">
-      <button role="tab" id="tab-practise" aria-selected="true" data-view="practise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4.5-1L19 8.5 15.5 5 5 15.5z"/><path d="M13.5 7l3.5 3.5"/></svg>Practise</button>
-      <button role="tab" id="tab-quiz" aria-selected="false" data-view="quiz"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 1.5M9.5 2.5h5"/></svg>Quiz</button>
-      <button role="tab" id="tab-progress" aria-selected="false" data-view="progress"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg>My progress</button>
-    </nav>
+    <div class="header-right">
+      <div class="header-buttons">
+        <button class="menu-btn" id="bg-btn" type="button" aria-haspopup="dialog" aria-controls="bg-dialog" aria-label="Background"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.6-.8 1.6-1.6 0-1-.8-1.3-.8-2.1 0-.9.7-1.5 1.6-1.5H17a4 4 0 0 0 4-4C21 6.7 17 3 12 3z"/><circle cx="7.5" cy="11.5" r="1.1"/><circle cx="10" cy="7.3" r="1.1"/><circle cx="14.8" cy="7.3" r="1.1"/></svg><span class="btn-label">Background</span></button>
+        <button class="menu-btn" id="menu-btn" type="button" aria-haspopup="dialog" aria-controls="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Topics</button>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button role="tab" id="tab-home" aria-selected="true" data-view="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg>Home</button>
+        <button role="tab" id="tab-practise" aria-selected="false" data-view="practise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4.5-1L19 8.5 15.5 5 5 15.5z"/><path d="M13.5 7l3.5 3.5"/></svg>Practise</button>
+        <button role="tab" id="tab-quiz" aria-selected="false" data-view="quiz"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 1.5M9.5 2.5h5"/></svg>Quiz</button>
+        <button role="tab" id="tab-progress" aria-selected="false" data-view="progress"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg>My progress</button>
+      </nav>
+    </div>
   </header>
 
-  <!-- ================= PRACTISE ================= -->
-  <section id="view-practise" class="wrap" style="gap:16px">
-    <details class="picker" id="picker" open>
-      <summary><span class="label">Topic</span> <strong id="picker-current"></strong> <span class="picker-change">Change</span></summary>
-      <div class="picker-body">
-    <div class="controls">
-      <div class="group">
-        <span class="label">Strand</span>
-        <div class="pills" id="strand-pills"></div>
-      </div>
-      <div class="group">
-        <span class="label">Year</span>
-        <div class="seg" id="year-seg">
-          <button data-year="all" aria-pressed="true">All</button>
-          <button data-year="7" aria-pressed="false">Y7</button>
-          <button data-year="8" aria-pressed="false">Y8</button>
-          <button data-year="9" aria-pressed="false">Y9</button>
+  <!-- ================= HOME ================= -->
+  <section id="view-home" class="home">
+    <div class="card hero">
+      <div class="hero-text">
+        <h2>Welcome to GCSE Maths Tutor</h2>
+        <p class="muted">Practise maths for Years 7 to 10, from Key Stage 3 into GCSE. When you get stuck, climb the hint ladder: three hints, each a bit more helpful before you get the worked solution.</p>
+        <div class="actions">
+          <button class="btn" id="home-start" type="button">Start practising</button>
+          <button class="btn secondary" data-goto="quiz" type="button">Take a quiz</button>
         </div>
       </div>
+    </div>
+
+    <div class="home-stats" id="home-stats" hidden></div>
+
+    <div class="home-areas">
+      <h2>Choose an area</h2>
+      <div class="area-grid" id="area-grid"></div>
+    </div>
+  </section>
+
+  <!-- ================= PRACTISE ================= -->
+  <section id="view-practise" class="wrap" style="gap:16px" hidden>
+    <div class="topic-bar">
+      <button class="topic-current" id="topic-current" type="button" aria-haspopup="dialog" aria-controls="menu">
+        <span class="label">Topic</span>
+        <strong id="topic-current-name"></strong>
+        <span class="topic-change">Change ▾</span>
+      </button>
       <div class="group">
         <span class="label">Level</span>
         <div class="seg" id="level-seg">
@@ -287,13 +498,6 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
         </div>
       </div>
     </div>
-
-    <div class="group">
-      <span class="label">Topic</span>
-      <div class="chips" id="topic-chips"></div>
-    </div>
-      </div>
-    </details>
 
     <details class="learn" id="learn">
       <summary id="learn-title">How does this topic work?</summary>
@@ -307,6 +511,7 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
           <span class="badge foundation" id="q-level">Foundation</span>
         </div>
         <div class="prompt" id="q-prompt" aria-live="polite"></div>
+        <div class="diagram" id="q-diagram" hidden></div>
         <form class="answer-row" id="answer-form" autocomplete="off">
           <input id="answer" aria-label="Your answer" placeholder="Your answer" spellcheck="false" autocapitalize="off">
           <button class="btn" type="submit" id="check-btn">Check</button>
@@ -330,28 +535,39 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
 
   <!-- ================= QUIZ ================= -->
   <section id="view-quiz" hidden>
-    <div class="card" id="quiz-setup">
-      <h2>Quick quiz</h2>
-      <p class="muted">8 questions with no hints. You can quiz one topic, a whole strand, or everything. Take one before you practise a topic and another one after, then compare the scores on the My progress tab. That shows whether the hints are helping you learn.</p>
-      <div class="controls">
-        <label class="group"><span class="label">Topic</span>
-          <select id="quiz-topic" style="padding:8px;border-radius:8px;border:1.5px solid var(--line);background:var(--card)"></select>
+    <div class="card quiz-setup" id="quiz-setup">
+      <div class="quiz-intro">
+        <h2>Quick quiz</h2>
+        <p class="muted">See what you can do on your own. No hints, just you and the questions.</p>
+        <ul class="quiz-facts">
+          <li>8 questions</li>
+          <li>No hints</li>
+          <li>About 5 minutes</li>
+        </ul>
+      </div>
+      <div class="quiz-fields">
+        <label class="group quiz-topic-field"><span class="label">Topic</span>
+          <select class="select" id="quiz-topic"></select>
         </label>
         <label class="group"><span class="label">Level</span>
-          <select id="quiz-level" style="padding:8px;border-radius:8px;border:1.5px solid var(--line);background:var(--card)">
+          <select class="select" id="quiz-level">
             <option value="foundation">Foundation</option>
             <option value="higher">Higher</option>
           </select>
         </label>
-        <label class="group"><span class="label">This quiz is…</span>
-          <select id="quiz-when" style="padding:8px;border-radius:8px;border:1.5px solid var(--line);background:var(--card)">
+        <label class="group"><span class="label">When are you taking it?</span>
+          <select class="select" id="quiz-when">
             <option value="before">Before practising</option>
             <option value="after">After practising</option>
             <option value="later">A week later (memory check)</option>
             <option value="other">Just for fun</option>
           </select>
         </label>
-        <button class="btn" id="quiz-start" type="button">Start quiz</button>
+      </div>
+      <button class="btn quiz-go" id="quiz-start" type="button">Start quiz →</button>
+      <div class="quiz-tip">
+        <strong>Are the hints helping?</strong>
+        Take a quiz <em>before</em> you practise a topic and another <em>after</em>. My progress puts the two scores side by side, so you can see how much you’ve improved.
       </div>
     </div>
 
@@ -362,6 +578,7 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
       </div>
       <div class="quiz-progress"><span id="quiz-bar" style="width:0%"></span></div>
       <div class="prompt" id="quiz-prompt"></div>
+      <div class="diagram" id="quiz-diagram" hidden></div>
       <form class="answer-row" id="quiz-form" autocomplete="off">
         <input id="quiz-answer" aria-label="Your answer" placeholder="Your answer" spellcheck="false" autocapitalize="off">
         <button class="btn" type="submit">Submit</button>
@@ -403,8 +620,76 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
     </div>
   </section>
 
+  <!-- ================= TOPIC MENU ================= -->
+  <!-- ================= BACKGROUND ================= -->
+  <dialog class="sheet" id="bg-dialog" aria-labelledby="bg-title">
+    <div class="menu-head">
+      <h2 id="bg-title">Background</h2>
+      <button class="menu-close" id="bg-close" type="button" aria-label="Close">✕</button>
+    </div>
+    <section class="bg-section">
+      <h3 class="label">Ready-made</h3>
+      <div class="swatches" id="bg-presets"></div>
+    </section>
+    <section class="bg-section" id="bg-saved-section" hidden>
+      <h3 class="label">My backgrounds</h3>
+      <div class="swatches" id="bg-saved"></div>
+    </section>
+    <section class="bg-section">
+      <h3 class="label">Create your own</h3>
+      <div class="bg-maker">
+        <label class="group"><span class="label">Colour</span><input type="color" id="bg-c1" value="#cfe8ff"></label>
+        <label class="group"><span class="label">Second colour</span><input type="color" id="bg-c2" value="#f3d9ff"></label>
+        <div class="group">
+          <span class="label">Style</span>
+          <div class="seg" id="bg-style">
+            <button type="button" data-style="solid" aria-pressed="false">One colour</button>
+            <button type="button" data-style="gradient" aria-pressed="true">Blend</button>
+          </div>
+        </div>
+        <div class="group">
+          <span class="label">Pattern</span>
+          <div class="seg" id="bg-pattern">
+            <button type="button" data-pattern="none" aria-pressed="true">None</button>
+            <button type="button" data-pattern="grid" aria-pressed="false">Squares</button>
+            <button type="button" data-pattern="dots" aria-pressed="false">Dots</button>
+            <button type="button" data-pattern="lines" aria-pressed="false">Lines</button>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <label class="btn secondary file-btn">Use a photo<input type="file" id="bg-photo" accept="image/*"></label>
+        <button class="btn secondary" id="bg-save" type="button">Save to my backgrounds</button>
+      </div>
+      <p class="muted bg-note" id="bg-note" aria-live="polite"></p>
+    </section>
+    <div class="actions bg-foot">
+      <button class="btn secondary" id="bg-reset" type="button">Back to squared paper</button>
+      <button class="btn" id="bg-done" type="button">Done</button>
+    </div>
+  </dialog>
+
+  <dialog class="menu" id="menu" aria-labelledby="menu-title">
+    <div class="menu-head">
+      <h2 id="menu-title">Topics</h2>
+      <button class="menu-close" id="menu-close" type="button" aria-label="Close the menu">✕</button>
+    </div>
+    <input class="menu-search" id="menu-search" type="search" placeholder="Search topics, e.g. fractions" aria-label="Search topics" autocomplete="off">
+    <div class="menu-year">
+      <span class="label">Year</span>
+      <div class="seg" id="year-seg">
+        <button data-year="all" aria-pressed="true">All</button>
+        <button data-year="7" aria-pressed="false">Y7</button>
+        <button data-year="8" aria-pressed="false">Y8</button>
+        <button data-year="9" aria-pressed="false">Y9</button>
+        <button data-year="10" aria-pressed="false">Y10</button>
+      </div>
+    </div>
+    <nav id="menu-list" aria-label="All topics"></nav>
+    <p class="muted menu-empty" id="menu-empty" hidden>No topics match. Try another search or year.</p>
+  </dialog>
+
   <footer>
-    Typing tips: <code>x^2</code> for x², <code>-</code> for minus, <code>3/4</code> for fractions, and <code>pi</code> for π. Units like cm or £ are optional.
     Progress is saved in this browser only. Some questions describe shapes in words, so keep paper handy for sketches.
   </footer>
 </div>
@@ -422,7 +707,6 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
   const $ = id => document.getElementById(id);
   const topicById = id => M.TOPICS.find(t => t.id === id);
   const strandName = id => M.STRANDS.find(s => s.id === id).name;
-  const isPhone = () => window.matchMedia('(max-width: 760px)').matches;
 
   // ---------- Saving progress in the browser ----------
   const STORE_KEY = 'algebra-hint-ladder-v1';
@@ -460,7 +744,10 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
     inequality: { tip: 'Type an inequality, like x > 4 or x ≤ −2 (<= works for ≤).', placeholder: 'e.g. x > 4' },
     pair: { tip: 'Type both values, like x = 3, y = −2.', placeholder: 'e.g. x = 3, y = −2' },
     standard: { tip: 'Type it like 3.4 × 10^4 (x or * works for ×).', placeholder: 'e.g. 3.4 × 10^4' },
-    primes: { tip: 'Type primes multiplied together, like 2^3 × 3^2.', placeholder: 'e.g. 2^3 × 3' }
+    primes: { tip: 'Type primes multiplied together, like 2^3 × 3^2.', placeholder: 'e.g. 2^3 × 3' },
+    roots: { tip: 'Type both solutions, like x = 2, x = −3. Fractions like −3/2 are fine.', placeholder: 'e.g. x = 2, x = −3' },
+    surd: { tip: 'Type a surd like 3√2. Use the √ key, or type sqrt: 3sqrt2.', placeholder: 'e.g. 3√2' },
+    point: { tip: 'Type coordinates like (−3, 4): x first, then y.', placeholder: 'e.g. (−3, 4)' }
   };
   const KEYS = {
     number: [['−', '-'], ['.', '.'], ['/', '/'], ['π', 'π']],
@@ -469,7 +756,10 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
     inequality: [['x', 'x'], ['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥'], ['−', '-']],
     pair: [['x =', 'x = '], ['y =', 'y = '], [',', ', '], ['−', '-']],
     standard: [['× 10^', ' × 10^'], ['−', '-'], ['.', '.']],
-    primes: [['×', ' × '], ['^', '^']]
+    primes: [['×', ' × '], ['^', '^']],
+    roots: [['x =', 'x = '], [',', ', '], ['−', '-'], ['/', '/'], ['.', '.']],
+    surd: [['√', '√'], ['−', '-'], ['/', '/']],
+    point: [['(', '('], [')', ')'], [',', ', '], ['−', '-']]
   };
   // Letters each algebra topic uses, for the expression keys
   const LETTERS = { simplify: ['x', 'y'], sequences: ['n'], rearrange: ['y'] };
@@ -498,13 +788,16 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
     }
   }
 
-  function showPrompt(el, question) {
+  function showPrompt(el, question, diagramEl) {
     el.textContent = question.prompt;
     el.classList.toggle('long', question.prompt.length > 60);
+    // Diagrams are SVG built by the topic files from the question's own numbers
+    diagramEl.innerHTML = question.diagram || '';
+    diagramEl.hidden = !question.diagram;
   }
 
   // ---------- Choosing a topic ----------
-  let strand = 'algebra';
+  // Topics are chosen from the menu, which can be narrowed down to one year group.
   let yearFilter = 'all';
   let topic = 'linear';
   let levelChoice = 'auto';
@@ -515,65 +808,13 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
   let session = { solved: 0, noHints: 0 };
 
   function yearRange(t) {
-    const years = t.year.match(/\d/g).map(Number);
+    const years = t.year.match(/\d+/g).map(Number);
     return [Math.min(...years), Math.max(...years)];
   }
   function inYear(t) {
     if (yearFilter === 'all') return true;
     const [lo, hi] = yearRange(t);
     return lo <= Number(yearFilter) && Number(yearFilter) <= hi;
-  }
-  function visibleTopics() {
-    return M.TOPICS.filter(t => t.strand === strand && inYear(t));
-  }
-
-  function renderStrands() {
-    const box = $('strand-pills');
-    box.innerHTML = '';
-    for (const s of M.STRANDS) {
-      const count = M.TOPICS.filter(t => t.strand === s.id && inYear(t)).length;
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = s.name + ' (' + count + ')';
-      b.disabled = count === 0;
-      b.setAttribute('aria-pressed', String(s.id === strand));
-      b.addEventListener('click', () => { strand = s.id; refreshTopics(); });
-      box.appendChild(b);
-    }
-  }
-
-  function renderTopicChips() {
-    const box = $('topic-chips');
-    box.innerHTML = '';
-    for (const t of visibleTopics()) {
-      const b = document.createElement('button');
-      b.className = 'chip';
-      b.type = 'button';
-      b.setAttribute('aria-pressed', String(t.id === topic));
-      b.innerHTML = '<span class="year"></span><span class="name"></span><small></small>';
-      b.querySelector('.year').textContent = t.year;
-      b.querySelector('.name').textContent = t.name;
-      b.querySelector('small').textContent = t.example;
-      b.addEventListener('click', () => {
-        topic = t.id; renderTopicChips(); renderLearn(); newQuestion();
-        // On a phone, fold the picker away so the question is on screen
-        if (isPhone()) { $('picker').open = false; $('q-card').scrollIntoView({ block: 'start' }); }
-      });
-      box.appendChild(b);
-    }
-  }
-
-  // After the strand or year changes, make sure the chosen topic is still on screen
-  function refreshTopics() {
-    if (!M.TOPICS.some(t => t.strand === strand && inYear(t))) strand = M.STRANDS.find(s => M.TOPICS.some(t => t.strand === s.id && inYear(t))).id;
-    renderStrands();
-    const list = visibleTopics();
-    if (!list.some(t => t.id === topic)) {
-      topic = list[0].id;
-      renderLearn();
-      newQuestion();
-    }
-    renderTopicChips();
   }
 
   function renderLearn() {
@@ -582,6 +823,108 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
     $('learn-body').innerHTML = l.body.map(p => '<p>' + p + '</p>').join('') + '<div class="eg"></div>';
     $('learn-body').querySelector('.eg').textContent = l.eg;
   }
+
+  // ---------- Topic menu ----------
+  // Areas whose topics are showing. The menu opens with just the current topic's area open;
+  // while searching, every area with a match is open.
+  const openGroups = new Set();
+
+  function renderMenu() {
+    const box = $('menu-list');
+    const search = $('menu-search').value.trim().toLowerCase();
+    box.innerHTML = '';
+    let shown = 0;
+    for (const s of M.STRANDS) {
+      const list = M.TOPICS.filter(t => t.strand === s.id && inYear(t) &&
+        (!search || (t.name + ' ' + t.example + ' ' + s.name).toLowerCase().includes(search)));
+      if (!list.length) continue;
+      const group = document.createElement('div');
+      group.className = 'menu-group';
+      group.dataset.strand = s.id;
+      const h = document.createElement('h3');
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'menu-toggle';
+      toggle.setAttribute('aria-controls', 'menu-items-' + s.id);
+      toggle.innerHTML = '<span class="area"></span><span class="count"></span><span class="chevron" aria-hidden="true">▸</span>';
+      toggle.querySelector('.area').textContent = s.name;
+      toggle.querySelector('.count').textContent = list.length + (list.length === 1 ? ' topic' : ' topics');
+      h.appendChild(toggle);
+      group.appendChild(h);
+      const items = document.createElement('div');
+      items.className = 'menu-items';
+      items.id = 'menu-items-' + s.id;
+      const expanded = Boolean(search) || openGroups.has(s.id);
+      toggle.setAttribute('aria-expanded', String(expanded));
+      items.hidden = !expanded;
+      toggle.addEventListener('click', () => {
+        const open = items.hidden;
+        items.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        if (open) openGroups.add(s.id); else openGroups.delete(s.id);
+      });
+      group.appendChild(items);
+      for (const t of list) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'menu-item';
+        b.setAttribute('aria-current', String(t.id === topic));
+        b.innerHTML = '<span class="name"></span><small></small><span class="meta"><span class="year"></span><span class="done"></span></span>';
+        b.querySelector('.name').textContent = t.name;
+        b.querySelector('small').textContent = t.example;
+        b.querySelector('.year').textContent = t.year;
+        const solved = data.topics[t.id].solved;
+        b.querySelector('.done').textContent = solved ? '✓ ' + solved : '';
+        b.addEventListener('click', () => chooseFromMenu(t));
+        items.appendChild(b);
+        shown++;
+      }
+      box.appendChild(group);
+    }
+    $('menu-empty').hidden = shown > 0;
+  }
+
+  function chooseFromMenu(t) {
+    topic = t.id;
+    renderLearn();
+    newQuestion();
+    $('menu').close();
+    showView('practise');
+    $('q-card').scrollIntoView({ block: 'nearest' });
+    $('answer').focus({ preventScroll: true });
+  }
+
+  // area: open the menu on that area (from the home page) instead of the current topic's
+  function openMenu(area) {
+    $('menu-search').value = '';
+    openGroups.clear();
+    openGroups.add(area || topicById(topic).strand);
+    renderMenu();
+    $('menu').showModal();
+    if (area) {
+      const toggle = $('menu-list').querySelector('[aria-controls="menu-items-' + area + '"]');
+      if (toggle) { toggle.scrollIntoView({ block: 'start' }); toggle.focus(); }
+      return;
+    }
+    const current = $('menu-list').querySelector('[aria-current="true"]');
+    if (current) { current.scrollIntoView({ block: 'nearest' }); current.focus(); }
+  }
+
+  $('menu-btn').addEventListener('click', () => openMenu());
+  $('topic-current').addEventListener('click', () => openMenu());
+  $('menu-close').addEventListener('click', () => $('menu').close());
+  $('menu-search').addEventListener('input', () => { renderMenu(); $('menu-list').scrollTop = 0; });
+  // Clicking the dark area outside the panel closes it
+  $('menu').addEventListener('click', e => { if (e.target === $('menu')) $('menu').close(); });
+
+  $('year-seg').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    yearFilter = b.dataset.year;
+    for (const x of $('year-seg').querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+    renderMenu();
+    $('menu-list').scrollTop = 0;
+  });
 
   // ---------- Practise ----------
   function currentLevel() {
@@ -593,12 +936,13 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
     hintsShown = 0;
     tries = 0;
     finished = false;
+    document.body.dataset.strand = topicById(topic).strand;
     $('q-topic').textContent = topicById(topic).name;
-    $('picker-current').textContent = strandName(topicById(topic).strand) + ' \u00b7 ' + topicById(topic).name + ' \u00b7 ' + (levelChoice === 'auto' ? 'Auto' : levelChoice === 'higher' ? 'Higher' : 'Foundation');
+    $('topic-current-name').textContent = strandName(topicById(topic).strand) + ' \u00b7 ' + topicById(topic).name;
     const lvl = $('q-level');
     lvl.textContent = q.level === 'higher' ? 'Higher' : 'Foundation';
     lvl.className = 'badge ' + q.level;
-    showPrompt($('q-prompt'), q);
+    showPrompt($('q-prompt'), q, $('q-diagram'));
     const typing = TYPING[q.kind];
     $('answer').value = '';
     $('answer').disabled = false;
@@ -779,14 +1123,6 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
     newQuestion();
   });
 
-  $('year-seg').addEventListener('click', e => {
-    const b = e.target.closest('button');
-    if (!b) return;
-    yearFilter = b.dataset.year;
-    for (const x of $('year-seg').querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
-    refreshTopics();
-  });
-
   // ---------- Quiz ----------
   const QUIZ_LENGTH = 8;
   let quiz = null;
@@ -830,11 +1166,12 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
 
   function showQuizQuestion() {
     const item = quiz.items[quiz.index];
+    document.body.dataset.strand = topicById(item.q.topic).strand;
     $('quiz-count').textContent = 'Question ' + (quiz.index + 1) + ' of ' + QUIZ_LENGTH + ' · ' + topicById(item.q.topic).name;
     $('quiz-badge').textContent = quiz.level === 'higher' ? 'Higher' : 'Foundation';
     $('quiz-badge').className = 'badge ' + quiz.level;
     $('quiz-bar').style.width = (quiz.index / QUIZ_LENGTH * 100) + '%';
-    showPrompt($('quiz-prompt'), item.q);
+    showPrompt($('quiz-prompt'), item.q, $('quiz-diagram'));
     $('quiz-answer').value = '';
     $('quiz-answer').placeholder = TYPING[item.q.kind].placeholder;
     $('quiz-tip').textContent = TYPING[item.q.kind].tip;
@@ -885,7 +1222,7 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
   function renderProgress() {
     let rows = '';
     for (const s of M.STRANDS) {
-      rows += '<tr class="strand-row"><td colspan="7">' + s.name + '</td></tr>';
+      rows += '<tr class="strand-row" data-strand="' + s.id + '"><td colspan="7">' + s.name + '</td></tr>';
       for (const t of M.TOPICS.filter(x => x.strand === s.id)) {
         const st = data.topics[t.id];
         const avg = st.attempted ? (st.hintsUsed / st.attempted).toFixed(1) : '–';
@@ -958,22 +1295,270 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
     $('reset-no').addEventListener('click', () => { msg.innerHTML = ''; });
   });
 
+  // ---------- Background ----------
+  // Ready-made backgrounds, and ones you make yourself (colours, a pattern, or your own photo).
+  // Your choice is kept in this browser only.
+  const BG_KEY = 'hint-ladder-background-v1';
+  const PRESETS = [
+    { id: 'paper', name: 'Squared paper' },  // the page's normal background, set in the CSS
+    { id: 'plain', name: 'Plain', base: 'var(--paper)' },
+    { id: 'dots', name: 'Dots', base: 'var(--paper)', pattern: 'dots', pc: 'var(--line)' },
+    { id: 'lined', name: 'Lined paper', base: 'var(--paper)', pattern: 'lines', pc: 'var(--line)' },
+    { id: 'sky', name: 'Sky', base: 'linear-gradient(160deg, #cfe8ff, #f3d9ff)' },
+    { id: 'sunset', name: 'Sunset', base: 'linear-gradient(160deg, #ffd6a5, #ffadad 55%, #cdb4db)' },
+    { id: 'mint', name: 'Mint', base: 'linear-gradient(160deg, #d8f3dc, #b7e4c7)', pattern: 'dots', pc: 'rgba(0, 0, 0, 0.08)' },
+    { id: 'night', name: 'Night sky', base: 'linear-gradient(160deg, #0f172a, #312e81)', pattern: 'dots', pc: 'rgba(255, 255, 255, 0.16)' }
+  ];
+  const MAX_SAVED = 6;
+
+  function loadBackground() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(BG_KEY));
+      if (saved && saved.current) return { current: saved.current, saved: saved.saved || [] };
+    } catch (e) { /* storage blocked or empty */ }
+    return { current: { type: 'preset', id: 'paper' }, saved: [] };
+  }
+  let bg = loadBackground();
+
+  // Returns false if the browser wouldn't store it (usually a photo that's too big)
+  function saveBackground() {
+    try { localStorage.setItem(BG_KEY, JSON.stringify(bg)); return true; } catch (e) { return false; }
+  }
+
+  function isDark(hex) {
+    const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.45;
+  }
+
+  // Turn a saved choice into what to draw: a base colour or gradient, an optional pattern, or a photo
+  function describe(choice) {
+    if (choice.type === 'preset') return PRESETS.find(p => p.id === choice.id) || PRESETS[0];
+    if (choice.photo) return { photo: choice.photo };
+    return {
+      base: choice.style === 'gradient' ? 'linear-gradient(160deg, ' + choice.c1 + ', ' + choice.c2 + ')' : choice.c1,
+      pattern: choice.pattern,
+      pc: isDark(choice.c1) ? 'rgba(255, 255, 255, 0.14)' : 'rgba(0, 0, 0, 0.08)'
+    };
+  }
+
+  // CSS background layers for a choice: the pattern on top, then the gradient or photo, then the colour
+  function layers(look) {
+    const images = [], sizes = [];
+    if (look.pattern === 'grid') {
+      images.push('linear-gradient(' + look.pc + ' 1px, transparent 1px)', 'linear-gradient(90deg, ' + look.pc + ' 1px, transparent 1px)');
+      sizes.push('22px 22px', '22px 22px');
+    } else if (look.pattern === 'dots') {
+      images.push('radial-gradient(' + look.pc + ' 1.6px, transparent 1.9px)');
+      sizes.push('18px 18px');
+    } else if (look.pattern === 'lines') {
+      images.push('linear-gradient(transparent 27px, ' + look.pc + ' 27px)');
+      sizes.push('100% 28px');
+    }
+    let color = 'var(--paper)';
+    if (look.photo) { images.push('url("' + look.photo + '")'); sizes.push('cover'); }
+    else if (look.base.startsWith('linear-gradient')) { images.push(look.base); sizes.push('100% 100%'); }
+    else color = look.base;
+    return { color, image: images.join(', ') || 'none', size: sizes.join(', ') || 'auto' };
+  }
+
+  function paint(el, choice, fixed) {
+    const look = describe(choice);
+    if (!look.base && !look.photo) { el.style.background = ''; return; }  // squared paper: use the CSS
+    const l = layers(look);
+    el.style.background = '';
+    el.style.backgroundColor = l.color;
+    el.style.backgroundImage = l.image;
+    el.style.backgroundSize = l.size;
+    el.style.backgroundPosition = 'center';
+    if (fixed) el.style.backgroundAttachment = 'fixed';
+  }
+
+  function applyBackground() {
+    paint(document.body, bg.current, true);
+    document.body.classList.toggle('custom-bg', !(bg.current.type === 'preset' && bg.current.id === 'paper'));
+  }
+
+  const sameChoice = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+  function swatch(choice, name) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'swatch';
+    b.setAttribute('aria-pressed', String(sameChoice(choice, bg.current)));
+    b.innerHTML = '<span class="swatch-preview"></span><span class="swatch-name"></span>';
+    b.querySelector('.swatch-name').textContent = name;
+    const preview = b.querySelector('.swatch-preview');
+    if (choice.type === 'preset' && choice.id === 'paper') preview.classList.add('is-paper');
+    else paint(preview, choice, false);
+    b.addEventListener('click', () => choose(choice));
+    return b;
+  }
+
+  function renderBackgrounds() {
+    const presets = $('bg-presets');
+    presets.innerHTML = '';
+    for (const p of PRESETS) presets.appendChild(swatch({ type: 'preset', id: p.id }, p.name));
+
+    const saved = $('bg-saved');
+    saved.innerHTML = '';
+    $('bg-saved-section').hidden = !bg.saved.length;
+    bg.saved.forEach((choice, i) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'swatch-wrap';
+      wrap.appendChild(swatch(choice, 'Mine ' + (i + 1)));
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'swatch-remove';
+      remove.textContent = '✕';
+      remove.setAttribute('aria-label', 'Delete my background ' + (i + 1));
+      remove.addEventListener('click', () => { bg.saved.splice(i, 1); saveBackground(); renderBackgrounds(); });
+      wrap.appendChild(remove);
+      saved.appendChild(wrap);
+    });
+
+    // The maker shows the colours and pattern of your current background, if it's one you made
+    const c = bg.current;
+    if (c.type === 'custom' && !c.photo) {
+      $('bg-c1').value = c.c1;
+      $('bg-c2').value = c.c2;
+      for (const x of $('bg-style').querySelectorAll('button')) x.setAttribute('aria-pressed', String(x.dataset.style === c.style));
+      for (const x of $('bg-pattern').querySelectorAll('button')) x.setAttribute('aria-pressed', String(x.dataset.pattern === c.pattern));
+    }
+    $('bg-save').disabled = c.type !== 'custom' || bg.saved.some(s => sameChoice(s, c));
+  }
+
+  function choose(choice, note) {
+    bg.current = choice;
+    applyBackground();
+    const kept = saveBackground();
+    $('bg-note').textContent = kept ? (note || '') : 'This background is showing, but your browser couldn’t store it, so it won’t be kept next time. A smaller photo may work.';
+    renderBackgrounds();
+  }
+
+  // Build a background from the maker's colours, style and pattern
+  function fromMaker() {
+    const pressed = id => $(id).querySelector('[aria-pressed="true"]');
+    choose({
+      type: 'custom',
+      c1: $('bg-c1').value,
+      c2: $('bg-c2').value,
+      style: pressed('bg-style').dataset.style,
+      pattern: pressed('bg-pattern').dataset.pattern
+    });
+  }
+
+  $('bg-c1').addEventListener('input', fromMaker);
+  $('bg-c2').addEventListener('input', fromMaker);
+  for (const id of ['bg-style', 'bg-pattern']) {
+    $(id).addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      for (const x of $(id).querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+      fromMaker();
+    });
+  }
+
+  // A photo is shrunk before it's stored, so it fits in the browser's storage
+  $('bg-photo').addEventListener('change', () => {
+    const file = $('bg-photo').files[0];
+    $('bg-photo').value = '';
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, 1400 / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        choose({ type: 'custom', photo: canvas.toDataURL('image/jpeg', 0.8) });
+      };
+      img.onerror = () => { $('bg-note').textContent = 'That file couldn’t be opened as a picture. Try a JPG or PNG photo.'; };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  $('bg-save').addEventListener('click', () => {
+    if (bg.current.type !== 'custom') return;
+    bg.saved.push(bg.current);
+    if (bg.saved.length > MAX_SAVED) bg.saved.shift();
+    const kept = saveBackground();
+    $('bg-note').textContent = kept ? 'Saved to My backgrounds.' : 'Your browser couldn’t store that one. Try deleting a saved background, or use a smaller photo.';
+    if (!kept) bg.saved.pop();
+    renderBackgrounds();
+  });
+
+  $('bg-reset').addEventListener('click', () => choose({ type: 'preset', id: 'paper' }));
+  $('bg-btn').addEventListener('click', () => { $('bg-note').textContent = ''; renderBackgrounds(); $('bg-dialog').showModal(); });
+  for (const id of ['bg-close', 'bg-done']) $(id).addEventListener('click', () => $('bg-dialog').close());
+  $('bg-dialog').addEventListener('click', e => { if (e.target === $('bg-dialog')) $('bg-dialog').close(); });
+
+  applyBackground();
+
+  // ---------- Home ----------
+  function renderHome() {
+    const practisedBefore = data.log.length > 0;
+    $('home-start').textContent = practisedBefore ? 'Carry on: ' + topicById(topic).name : 'Start practising';
+
+    // Totals, once there is something to show
+    let solved = 0, noHints = 0;
+    for (const t of M.TOPICS) { solved += data.topics[t.id].solved; noHints += data.topics[t.id].solvedNoHints; }
+    const stats = $('home-stats');
+    stats.hidden = !solved && !data.quizzes.length;
+    stats.innerHTML = '';
+    for (const [value, words] of [[solved, 'questions solved'], [noHints, 'solved with no hints'], [data.quizzes.length, data.quizzes.length === 1 ? 'quiz taken' : 'quizzes taken']]) {
+      const box = document.createElement('div');
+      box.className = 'stat';
+      box.innerHTML = '<strong></strong><span></span>';
+      box.querySelector('strong').textContent = value;
+      box.querySelector('span').textContent = words;
+      stats.appendChild(box);
+    }
+
+    // One card per area, which opens the topic menu on that area
+    const grid = $('area-grid');
+    grid.innerHTML = '';
+    for (const s of M.STRANDS) {
+      const list = M.TOPICS.filter(t => t.strand === s.id);
+      const done = list.reduce((sum, t) => sum + data.topics[t.id].solved, 0);
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'area-card';
+      card.dataset.strand = s.id;
+      card.innerHTML = '<span class="name"></span><span class="count"></span><span class="examples"></span><span class="solved"></span>';
+      card.querySelector('.name').textContent = s.name;
+      card.querySelector('.count').textContent = list.length + ' topics';
+      card.querySelector('.examples').textContent = list.slice(0, 3).map(t => t.name).join(', ') + '…';
+      card.querySelector('.solved').textContent = done ? '✓ ' + done + ' solved' : '';
+      card.addEventListener('click', () => openMenu(s.id));
+      grid.appendChild(card);
+    }
+  }
+
+  $('home-start').addEventListener('click', () => { showView('practise'); $('answer').focus(); });
+  $('home-link').addEventListener('click', e => { e.preventDefault(); showView('home'); });
+
   // ---------- Tabs ----------
   function showView(name) {
     for (const b of document.querySelectorAll('.tabs button')) b.setAttribute('aria-selected', String(b.dataset.view === name));
-    for (const v of ['practise', 'quiz', 'progress']) $('view-' + v).hidden = v !== name;
+    for (const v of ['home', 'practise', 'quiz', 'progress']) $('view-' + v).hidden = v !== name;
+    if (name === 'home') renderHome();
     if (name === 'progress') renderProgress();
+    // A quiz may have changed the page colour, so put back the practice topic's
+    if (name === 'practise') document.body.dataset.strand = topicById(topic).strand;
   }
   for (const b of document.querySelectorAll('[data-view]')) b.addEventListener('click', () => showView(b.dataset.view));
   for (const b of document.querySelectorAll('[data-goto]')) b.addEventListener('click', () => showView(b.dataset.goto));
 
   // ---------- Start ----------
+  // Pick up on the topic practised most recently
+  const last = data.log[data.log.length - 1];
+  if (last && topicById(last.topic)) topic = last.topic;
   fillQuizTopics();
-  renderStrands();
-  renderTopicChips();
   renderLearn();
   newQuestion();
-  if (isPhone()) $('picker').open = false;
 
   // ---------- Installing as an app ----------
   // Chrome, Edge and Android offer an install prompt; we show our own button for it.
@@ -1004,8 +1589,8 @@ details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
   }
 
   const fromLink = (location.hash || '').slice(1);
-  if (['practise', 'quiz', 'progress'].includes(fromLink)) showView(fromLink);
+  showView(['practise', 'quiz', 'progress'].includes(fromLink) ? fromLink : 'home');
 })();
 </script>
-</body>
-</html>
+
+</body></html>
