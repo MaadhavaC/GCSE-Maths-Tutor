@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maths Hint Ladder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b2a41">
+<meta name="description" content="Key Stage 3 maths practice (Years 7 to 9) that teaches with a ladder of hints before showing the answer.">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hint Ladder">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Kalam:wght@400;700&family=STIX+Two+Text:ital,wght@0,500;1,500&display=swap">
+<style>
+/* Layout: a maths exercise book. Squared paper behind, one question card on top,
+   teacher's pen notes (the hints) down a red-margined strip beside it. */
+:root {
+  --paper: #f5f8fb;
+  --grid: #dfe7ef;
+  --card: #ffffff;
+  --ink: #1b2a41;
+  --muted: #5a6a80;
+  --line: #c9d5e2;
+  --accent: #2b55c9;
+  --accent-ink: #ffffff;
+  --pen: #0d7466;
+  --margin: #e0675c;
+  --good: #1d7a3b;
+  --good-bg: #e3f4e8;
+  --bad: #b8352a;
+  --bad-bg: #fbe7e4;
+  --warn: #8a5a00;
+  --warn-bg: #fff2cc;
+
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-maths: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --font-pen: "Kalam", "Comic Sans MS", "Segoe Print", cursive;
+
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1621; --grid: #182434; --card: #142030; --ink: #e5ecf4; --muted: #95a5ba;
+    --line: #273950; --accent: #7d9fff; --accent-ink: #0b1220; --pen: #52d1b8; --margin: #e2857c;
+    --good: #6fd697; --good-bg: #153223; --bad: #ff8a7d; --bad-bg: #3a1a17; --warn: #f1c35a; --warn-bg: #3a2e0f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1621; --grid: #182434; --card: #142030; --ink: #e5ecf4; --muted: #95a5ba;
+  --line: #273950; --accent: #7d9fff; --accent-ink: #0b1220; --pen: #52d1b8; --margin: #e2857c;
+  --good: #6fd697; --good-bg: #153223; --bad: #ff8a7d; --bad-bg: #3a1a17; --warn: #f1c35a; --warn-bg: #3a2e0f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font: 17px/1.55 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: max(20px, env(safe-area-inset-top, 0px));
+  padding-bottom: 48px;
+}
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 20px; }
+
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: 1.3rem; font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ----- Header and tabs ----- */
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+header p { max-width: 46ch; }
+.tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+.tabs button { border: 0; background: transparent; padding: 8px 16px; border-radius: 999px; font-weight: 700; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+
+/* ----- Controls row ----- */
+.controls { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: end; }
+.group { display: grid; gap: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1.5px solid var(--line); background: var(--card); border-radius: 8px;
+  padding: 6px 12px; text-align: left; display: grid; line-height: 1.25;
+}
+.chip small { font-family: var(--font-maths); color: var(--muted); font-size: 0.9rem; }
+.chip .year { font-family: var(--font-body); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; color: var(--pen); }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pills button { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 6px 14px; font-weight: 700; color: var(--muted); }
+.pills button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.type-tip { font-size: 0.9rem; color: var(--muted); margin-top: -8px; }
+.chip[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--card); }
+.seg button { border: 0; background: transparent; padding: 8px 14px; font-weight: 700; color: var(--muted); }
+.seg button + button { border-left: 1.5px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+/* ----- Learn box ----- */
+details.learn { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+details.learn summary { cursor: pointer; font-weight: 700; }
+details.learn[open] summary { margin-bottom: 10px; }
+.learn-body { display: grid; gap: 10px; max-width: 70ch; }
+.learn-body .eg { font-family: var(--font-maths); font-size: 1.1rem; background: var(--paper); border-radius: 6px; padding: 8px 12px; white-space: pre-line; }
+
+/* ----- Practice layout: question + hint strip ----- */
+.desk { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 760px) { .desk { grid-template-columns: minmax(0, 1fr); } }
+
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px; display: grid; gap: 16px; box-shadow: 0 1px 0 var(--line);
+}
+.qhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1.5px solid currentColor; }
+.badge.foundation { color: var(--pen); }
+.badge.higher { color: var(--accent); }
+.prompt { font-family: var(--font-maths); font-size: clamp(1.5rem, 4.5vw, 2.1rem); line-height: 1.3; white-space: pre-wrap; overflow-wrap: anywhere; }
+.prompt.long { font-size: clamp(1.15rem, 3vw, 1.4rem); line-height: 1.5; max-width: 60ch; }
+
+.answer-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.answer-row input {
+  flex: 1 1 180px; min-width: 0; font-family: var(--font-maths); font-size: 1.35rem;
+  padding: 8px 12px; border: 2px solid var(--line); border-radius: 8px; background: var(--paper);
+}
+.answer-row input:focus { border-color: var(--accent); outline: none; }
+.keys { display: flex; flex-wrap: wrap; gap: 6px; }
+.keys button { font-family: var(--font-maths); font-size: 1.05rem; min-width: 42px; padding: 4px 10px; border: 1px solid var(--line); background: var(--paper); border-radius: 6px; }
+
+.btn { border: 0; border-radius: 8px; padding: 10px 18px; font-weight: 700; background: var(--accent); color: var(--accent-ink); }
+.btn.secondary { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+.btn.pen { background: transparent; color: var(--pen); border: 1.5px dashed var(--pen); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.feedback { padding: 10px 14px; border-radius: 8px; font-weight: 700; display: flex; gap: 10px; align-items: baseline; }
+.feedback.correct { background: var(--good-bg); color: var(--good); }
+.feedback.wrong { background: var(--bad-bg); color: var(--bad); }
+.feedback.almost, .feedback.invalid { background: var(--warn-bg); color: var(--warn); }
+.feedback .mark { font-family: var(--font-pen); font-size: 1.4rem; line-height: 1; }
+
+/* Hint strip: an exercise-book margin with the teacher's notes in pen */
+.strip {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px 18px 18px 34px; position: relative; display: grid; gap: 14px;
+}
+.strip::before { content: ""; position: absolute; top: 0; bottom: 0; left: 22px; width: 2px; background: var(--margin); opacity: 0.7; }
+.ladder { display: flex; gap: 6px; align-items: center; }
+.rung { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-weight: 700; font-size: 0.85rem; color: var(--muted); }
+.rung.used { border-color: var(--pen); background: var(--pen); color: var(--card); }
+.rung.solution { font-size: 1rem; }
+.rung.solution.used { border-color: var(--bad); background: var(--bad); }
+.ladder .bar { flex: 1; height: 2px; background: var(--line); min-width: 8px; }
+.notes { display: grid; gap: 12px; }
+.note { font-family: var(--font-pen); color: var(--pen); font-size: 1.15rem; line-height: 1.4; }
+.note b { font-family: var(--font-body); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; display: block; color: var(--muted); }
+.solution { display: grid; gap: 4px; font-family: var(--font-maths); font-size: 1.1rem; border-top: 1px dashed var(--line); padding-top: 12px; }
+.solution .final { font-weight: 500; color: var(--bad); }
+.empty-note { color: var(--muted); font-style: italic; }
+
+.tally { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.95rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tally strong { color: var(--ink); }
+
+/* ----- Quiz ----- */
+.quiz-progress { height: 8px; background: var(--paper); border-radius: 999px; overflow: hidden; border: 1px solid var(--line); }
+.quiz-progress span { display: block; height: 100%; background: var(--accent); transition: width 0.25s ease; }
+.big-score { font-family: var(--font-display); font-size: 3rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+
+/* ----- Tables ----- */
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+td.num, th.num { text-align: right; }
+td.maths { font-family: var(--font-maths); white-space: pre-line; }
+tr.strand-row td { font-weight: 700; background: var(--paper); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.ok { color: var(--good); font-weight: 700; }
+.no { color: var(--bad); font-weight: 700; }
+
+.confirm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 14px; border-radius: 8px; background: var(--bad-bg); color: var(--bad); font-weight: 700; }
+.toast { font-weight: 700; color: var(--good); }
+textarea.csv { width: 100%; min-height: 120px; font-family: ui-monospace, monospace; font-size: 0.8rem; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; color: var(--ink); padding: 8px; }
+
+footer { font-size: 0.9rem; color: var(--muted); }
+code { font-family: ui-monospace, monospace; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+
+/* Topic picker: open on wide screens, folds away on phones */
+details.picker { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+details.picker > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; list-style: none; }
+details.picker > summary::-webkit-details-marker { display: none; }
+details.picker > summary strong { font-family: var(--font-display); font-weight: 600; }
+details.picker > summary .picker-change { margin-left: auto; color: var(--accent); font-weight: 700; font-size: 0.9rem; }
+details.picker[open] > summary .picker-change::after { content: " ▴"; }
+details.picker:not([open]) > summary .picker-change::after { content: " ▾"; }
+.picker-body { display: grid; gap: 16px; margin-top: 14px; }
+
+.install { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.install p { font-size: 0.9rem; color: var(--muted); max-width: 32ch; }
+.tabs svg { display: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Phones: an app-style tab bar along the bottom */
+@media (max-width: 760px) {
+  body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  header p { display: none; }
+  h1 { font-size: 1.5rem; }
+  .tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    border-radius: 0; border: 0; border-top: 1px solid var(--line);
+    justify-content: space-around; gap: 0;
+    padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  }
+  .tabs button { flex: 1; display: grid; justify-items: center; gap: 2px; font-size: 0.75rem; padding: 6px 4px; border-radius: 12px; }
+  .tabs button[aria-selected="true"] { background: transparent; color: var(--accent); }
+  .tabs svg { display: block; }
+  .card { padding: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div style="display:grid;gap:6px">
+      <h1>Maths Hint Ladder</h1>
+      <p class="muted">Key Stage 3 maths, Years 7 to 9, building up to GCSE. Stuck? Climb the hint ladder one rung at a time. The answer only appears at the very top.</p>
+    </div>
+    <div class="install" id="install" hidden>
+      <button class="btn" id="install-btn" type="button" hidden>Install app</button>
+      <p id="install-tip"></p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-practise" aria-selected="true" data-view="practise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4.5-1L19 8.5 15.5 5 5 15.5z"/><path d="M13.5 7l3.5 3.5"/></svg>Practise</button>
+      <button role="tab" id="tab-quiz" aria-selected="false" data-view="quiz"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 1.5M9.5 2.5h5"/></svg>Quiz</button>
+      <button role="tab" id="tab-progress" aria-selected="false" data-view="progress"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg>My progress</button>
+    </nav>
+  </header>
+
+  <!-- ================= PRACTISE ================= -->
+  <section id="view-practise" class="wrap" style="gap:16px">
+    <details class="picker" id="picker" open>
+      <summary><span class="label">Topic</span> <strong id="picker-current"></strong> <span class="picker-change">Change</span></summary>
+      <div class="picker-body">
+    <div class="controls">
+      <div class="group">
+        <span class="label">Strand</span>
+        <div class="pills" id="strand-pills"></div>
+      </div>
+      <div class="group">
+        <span class="label">Year</span>
+        <div class="seg" id="year-seg">
+          <button data-year="all" aria-pressed="true">All</button>
+          <button data-year="7" aria-pressed="false">Y7</button>
+          <button data-year="8" aria-pressed="false">Y8</button>
+          <button data-year="9" aria-pressed="false">Y9</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="label">Level</span>
+        <div class="seg" id="level-seg">
+          <button data-level="foundation" aria-pressed="false">Foundation</button>
+          <button data-level="higher" aria-pressed="false">Higher</button>
+          <button data-level="auto" aria-pressed="true" title="Moves up after 3 correct in a row with 1 hint or fewer, and back down after 2 solutions shown in a row">Auto</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <span class="label">Topic</span>
+      <div class="chips" id="topic-chips"></div>
+    </div>
+      </div>
+    </details>
+
+    <details class="learn" id="learn">
+      <summary id="learn-title">How does this topic work?</summary>
+      <div class="learn-body" id="learn-body"></div>
+    </details>
+
+    <div class="desk">
+      <div class="card" id="q-card">
+        <div class="qhead">
+          <span class="label" id="q-topic">Question</span>
+          <span class="badge foundation" id="q-level">Foundation</span>
+        </div>
+        <div class="prompt" id="q-prompt" aria-live="polite"></div>
+        <form class="answer-row" id="answer-form" autocomplete="off">
+          <input id="answer" aria-label="Your answer" placeholder="Your answer" spellcheck="false" autocapitalize="off">
+          <button class="btn" type="submit" id="check-btn">Check</button>
+        </form>
+        <p class="type-tip" id="type-tip"></p>
+        <div class="keys" id="keys" aria-label="Maths keys"></div>
+        <div id="feedback" aria-live="polite"></div>
+        <div class="actions">
+          <button class="btn pen" id="hint-btn" type="button">Give me a hint (1 of 3)</button>
+          <button class="btn secondary" id="next-btn" type="button">Skip to a new question</button>
+        </div>
+        <div class="tally" id="tally"></div>
+      </div>
+
+      <aside class="strip" aria-label="Hints">
+        <div class="ladder" id="ladder" aria-hidden="true"></div>
+        <div class="notes" id="notes"></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= QUIZ ================= -->
+  <section id="view-quiz" hidden>
+    <div class="card" id="quiz-setup">
+      <h2>Quick quiz</h2>
+      <p class="muted">8 questions with no hints. You can quiz one topic, a whole strand, or everything. Take one before you practise a topic and another one after, then compare the scores on the My progress tab. That shows whether the hints are helping you learn.</p>
+      <div class="controls">
+        <label class="group"><span class="label">Topic</span>
+          <select id="quiz-topic" style="padding:8px;border-radius:8px;border:1.5px solid var(--line);background:var(--card)"></select>
+        </label>
+        <label class="group"><span class="label">Level</span>
+          <select id="quiz-level" style="padding:8px;border-radius:8px;border:1.5px solid var(--line);background:var(--card)">
+            <option value="foundation">Foundation</option>
+            <option value="higher">Higher</option>
+          </select>
+        </label>
+        <label class="group"><span class="label">This quiz is…</span>
+          <select id="quiz-when" style="padding:8px;border-radius:8px;border:1.5px solid var(--line);background:var(--card)">
+            <option value="before">Before practising</option>
+            <option value="after">After practising</option>
+            <option value="later">A week later (memory check)</option>
+            <option value="other">Just for fun</option>
+          </select>
+        </label>
+        <button class="btn" id="quiz-start" type="button">Start quiz</button>
+      </div>
+    </div>
+
+    <div class="card" id="quiz-run" hidden>
+      <div class="qhead">
+        <span class="label" id="quiz-count">Question 1 of 8</span>
+        <span class="badge foundation" id="quiz-badge">Foundation</span>
+      </div>
+      <div class="quiz-progress"><span id="quiz-bar" style="width:0%"></span></div>
+      <div class="prompt" id="quiz-prompt"></div>
+      <form class="answer-row" id="quiz-form" autocomplete="off">
+        <input id="quiz-answer" aria-label="Your answer" placeholder="Your answer" spellcheck="false" autocapitalize="off">
+        <button class="btn" type="submit">Submit</button>
+      </form>
+      <p class="type-tip" id="quiz-tip"></p>
+      <div class="keys" id="quiz-keys"></div>
+      <div id="quiz-feedback" aria-live="polite"></div>
+    </div>
+
+    <div class="card" id="quiz-done" hidden>
+      <span class="label">Quiz finished</span>
+      <div class="big-score" id="quiz-score"></div>
+      <p id="quiz-summary" class="muted"></p>
+      <div class="table-wrap"><table id="quiz-review"></table></div>
+      <div class="actions">
+        <button class="btn" id="quiz-again" type="button">Take another quiz</button>
+        <button class="btn secondary" data-goto="practise" type="button">Go and practise</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROGRESS ================= -->
+  <section id="view-progress" class="wrap" style="gap:16px" hidden>
+    <div class="card">
+      <h2>Practice by topic</h2>
+      <p class="muted">“No hints” counts questions you got right on your own. Look for that number going up over time.</p>
+      <div class="table-wrap"><table id="topic-table"></table></div>
+    </div>
+    <div class="card">
+      <h2>Quiz scores</h2>
+      <p class="muted">Compare your <em>before</em> and <em>after</em> scores for the same topic and level.</p>
+      <div id="compare"></div>
+      <div class="table-wrap"><table id="quiz-table"></table></div>
+      <div class="actions">
+        <button class="btn secondary" id="csv-btn" type="button">Copy results for a spreadsheet</button>
+        <button class="btn secondary" id="reset-btn" type="button">Reset all progress</button>
+      </div>
+      <div id="progress-msg"></div>
+    </div>
+  </section>
+
+  <footer>
+    Typing tips: <code>x^2</code> for x², <code>-</code> for minus, <code>3/4</code> for fractions, and <code>pi</code> for π. Units like cm or £ are optional.
+    Progress is saved in this browser only. Some questions describe shapes in words, so keep paper handy for sketches.
+  </footer>
+</div>
+
+<script src="maths.js"></script>
+<script src="topics/number.js"></script>
+<script src="topics/algebra.js"></script>
+<script src="topics/ratio.js"></script>
+<script src="topics/geometry.js"></script>
+<script src="topics/stats.js"></script>
+<script>
+(function () {
+  'use strict';
+  const M = window.MathsEngine;
+  const $ = id => document.getElementById(id);
+  const topicById = id => M.TOPICS.find(t => t.id === id);
+  const strandName = id => M.STRANDS.find(s => s.id === id).name;
+  const isPhone = () => window.matchMedia('(max-width: 760px)').matches;
+
+  // ---------- Saving progress in the browser ----------
+  const STORE_KEY = 'algebra-hint-ladder-v1';
+  function blankTopic() {
+    return { attempted: 0, solved: 0, solvedNoHints: 0, hintsUsed: 0, revealed: 0, autoLevel: 'foundation', streak: 0, misses: 0 };
+  }
+  function blankSave() {
+    const topics = {};
+    for (const t of M.TOPICS) topics[t.id] = blankTopic();
+    return { topics, quizzes: [], log: [] };
+  }
+  function load() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORE_KEY));
+      if (saved && saved.topics) {
+        for (const t of M.TOPICS) saved.topics[t.id] = Object.assign(blankTopic(), saved.topics[t.id]);
+        saved.quizzes = saved.quizzes || [];
+        saved.log = saved.log || [];
+        return saved;
+      }
+    } catch (e) { /* storage blocked or empty: start fresh */ }
+    return blankSave();
+  }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) { /* not saved, but the page still works */ }
+  }
+  let data = load();
+
+  // ---------- What to type for each kind of answer ----------
+  const TYPING = {
+    number: { tip: 'Type a number, like 7, −4 or 2.5. Units are optional.', placeholder: 'e.g. 7' },
+    expression: { tip: 'Type an expression, like 3x + 12. Use ^ for powers: x^2.', placeholder: 'e.g. 3x + 12' },
+    fraction: { tip: 'Type a fraction like 3/4, or a mixed number like 1 1/2.', placeholder: 'e.g. 3/4' },
+    ratio: { tip: 'Type a ratio with colons, like 2 : 3.', placeholder: 'e.g. 2 : 3' },
+    inequality: { tip: 'Type an inequality, like x > 4 or x ≤ −2 (<= works for ≤).', placeholder: 'e.g. x > 4' },
+    pair: { tip: 'Type both values, like x = 3, y = −2.', placeholder: 'e.g. x = 3, y = −2' },
+    standard: { tip: 'Type it like 3.4 × 10^4 (x or * works for ×).', placeholder: 'e.g. 3.4 × 10^4' },
+    primes: { tip: 'Type primes multiplied together, like 2^3 × 3^2.', placeholder: 'e.g. 2^3 × 3' }
+  };
+  const KEYS = {
+    number: [['−', '-'], ['.', '.'], ['/', '/'], ['π', 'π']],
+    fraction: [['/', '/'], ['−', '-'], ['space', ' ']],
+    ratio: [[':', ' : ']],
+    inequality: [['x', 'x'], ['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥'], ['−', '-']],
+    pair: [['x =', 'x = '], ['y =', 'y = '], [',', ', '], ['−', '-']],
+    standard: [['× 10^', ' × 10^'], ['−', '-'], ['.', '.']],
+    primes: [['×', ' × '], ['^', '^']]
+  };
+  // Letters each algebra topic uses, for the expression keys
+  const LETTERS = { simplify: ['x', 'y'], sequences: ['n'], rearrange: ['y'] };
+
+  function keysFor(question) {
+    if (question.kind !== 'expression') return KEYS[question.kind] || [];
+    const letters = (LETTERS[question.topic] || ['x']).map(l => [l, l]);
+    return letters.concat([['x²', '^2'], ['(', '('], [')', ')'], ['−', '-'], ['+', '+'], ['/', '/']]);
+  }
+
+  function makeKeys(container, input, question) {
+    container.innerHTML = '';
+    for (const [label, text] of keysFor(question)) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      b.setAttribute('aria-label', 'Type ' + label);
+      b.addEventListener('click', () => {
+        const s = input.selectionStart ?? input.value.length;
+        const e = input.selectionEnd ?? input.value.length;
+        input.value = input.value.slice(0, s) + text + input.value.slice(e);
+        input.focus();
+        input.setSelectionRange(s + text.length, s + text.length);
+      });
+      container.appendChild(b);
+    }
+  }
+
+  function showPrompt(el, question) {
+    el.textContent = question.prompt;
+    el.classList.toggle('long', question.prompt.length > 60);
+  }
+
+  // ---------- Choosing a topic ----------
+  let strand = 'algebra';
+  let yearFilter = 'all';
+  let topic = 'linear';
+  let levelChoice = 'auto';
+  let q = null;          // the current question
+  let hintsShown = 0;    // 0–3 hints, 4 means the solution is showing
+  let tries = 0;
+  let finished = false;
+  let session = { solved: 0, noHints: 0 };
+
+  function yearRange(t) {
+    const years = t.year.match(/\d/g).map(Number);
+    return [Math.min(...years), Math.max(...years)];
+  }
+  function inYear(t) {
+    if (yearFilter === 'all') return true;
+    const [lo, hi] = yearRange(t);
+    return lo <= Number(yearFilter) && Number(yearFilter) <= hi;
+  }
+  function visibleTopics() {
+    return M.TOPICS.filter(t => t.strand === strand && inYear(t));
+  }
+
+  function renderStrands() {
+    const box = $('strand-pills');
+    box.innerHTML = '';
+    for (const s of M.STRANDS) {
+      const count = M.TOPICS.filter(t => t.strand === s.id && inYear(t)).length;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = s.name + ' (' + count + ')';
+      b.disabled = count === 0;
+      b.setAttribute('aria-pressed', String(s.id === strand));
+      b.addEventListener('click', () => { strand = s.id; refreshTopics(); });
+      box.appendChild(b);
+    }
+  }
+
+  function renderTopicChips() {
+    const box = $('topic-chips');
+    box.innerHTML = '';
+    for (const t of visibleTopics()) {
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(t.id === topic));
+      b.innerHTML = '<span class="year"></span><span class="name"></span><small></small>';
+      b.querySelector('.year').textContent = t.year;
+      b.querySelector('.name').textContent = t.name;
+      b.querySelector('small').textContent = t.example;
+      b.addEventListener('click', () => {
+        topic = t.id; renderTopicChips(); renderLearn(); newQuestion();
+        // On a phone, fold the picker away so the question is on screen
+        if (isPhone()) { $('picker').open = false; $('q-card').scrollIntoView({ block: 'start' }); }
+      });
+      box.appendChild(b);
+    }
+  }
+
+  // After the strand or year changes, make sure the chosen topic is still on screen
+  function refreshTopics() {
+    if (!M.TOPICS.some(t => t.strand === strand && inYear(t))) strand = M.STRANDS.find(s => M.TOPICS.some(t => t.strand === s.id && inYear(t))).id;
+    renderStrands();
+    const list = visibleTopics();
+    if (!list.some(t => t.id === topic)) {
+      topic = list[0].id;
+      renderLearn();
+      newQuestion();
+    }
+    renderTopicChips();
+  }
+
+  function renderLearn() {
+    const l = topicById(topic).learn;
+    $('learn-title').textContent = l.title;
+    $('learn-body').innerHTML = l.body.map(p => '<p>' + p + '</p>').join('') + '<div class="eg"></div>';
+    $('learn-body').querySelector('.eg').textContent = l.eg;
+  }
+
+  // ---------- Practise ----------
+  function currentLevel() {
+    return levelChoice === 'auto' ? data.topics[topic].autoLevel : levelChoice;
+  }
+
+  function newQuestion() {
+    q = M.generate(topic, currentLevel());
+    hintsShown = 0;
+    tries = 0;
+    finished = false;
+    $('q-topic').textContent = topicById(topic).name;
+    $('picker-current').textContent = strandName(topicById(topic).strand) + ' \u00b7 ' + topicById(topic).name + ' \u00b7 ' + (levelChoice === 'auto' ? 'Auto' : levelChoice === 'higher' ? 'Higher' : 'Foundation');
+    const lvl = $('q-level');
+    lvl.textContent = q.level === 'higher' ? 'Higher' : 'Foundation';
+    lvl.className = 'badge ' + q.level;
+    showPrompt($('q-prompt'), q);
+    const typing = TYPING[q.kind];
+    $('answer').value = '';
+    $('answer').disabled = false;
+    $('check-btn').disabled = false;
+    $('answer').placeholder = typing.placeholder;
+    $('type-tip').textContent = typing.tip;
+    makeKeys($('keys'), $('answer'), q);
+    $('feedback').innerHTML = '';
+    $('next-btn').textContent = 'Skip to a new question';
+    renderHints();
+    renderTally();
+  }
+
+  function renderHints() {
+    // Ladder: rungs 1, 2, 3 are hints; the last rung is the worked solution
+    const ladder = $('ladder');
+    ladder.innerHTML = '';
+    for (let i = 1; i <= 4; i++) {
+      if (i > 1) { const bar = document.createElement('span'); bar.className = 'bar'; ladder.appendChild(bar); }
+      const r = document.createElement('span');
+      r.className = 'rung' + (i === 4 ? ' solution' : '') + (hintsShown >= i ? ' used' : '');
+      r.textContent = i === 4 ? '✓' : String(i);
+      ladder.appendChild(r);
+    }
+
+    const notes = $('notes');
+    notes.innerHTML = '';
+    if (hintsShown === 0) {
+      const p = document.createElement('p');
+      p.className = 'empty-note';
+      p.textContent = finished
+        ? 'Solved without any hints. Nice!'
+        : 'Have a go first. If you get stuck, ask for a hint and it will appear here.';
+      notes.appendChild(p);
+    }
+    const names = ['Nudge', 'Guiding question', 'Next step'];
+    for (let i = 0; i < Math.min(hintsShown, 3); i++) {
+      const n = document.createElement('div');
+      n.className = 'note';
+      n.innerHTML = '<b>Hint ' + (i + 1) + ' · ' + names[i] + '</b>';
+      n.appendChild(document.createTextNode(q.hints[i]));
+      notes.appendChild(n);
+    }
+    if (hintsShown >= 4) {
+      const s = document.createElement('div');
+      s.className = 'solution';
+      s.innerHTML = '<span class="label">Worked solution</span>';
+      q.solution.forEach((line, i) => {
+        const d = document.createElement('div');
+        d.textContent = line;
+        if (i === q.solution.length - 1) d.className = 'final';
+        s.appendChild(d);
+      });
+      notes.appendChild(s);
+    }
+
+    const hb = $('hint-btn');
+    hb.hidden = finished;
+    if (hintsShown < 3) hb.textContent = 'Give me a hint (' + (hintsShown + 1) + ' of 3)';
+    else hb.textContent = 'Show the worked solution';
+  }
+
+  function renderTally() {
+    const t = data.topics[topic];
+    $('tally').innerHTML =
+      '<span>This session: <strong>' + session.solved + '</strong> solved, <strong>' + session.noHints + '</strong> with no hints</span>' +
+      '<span>All time on this topic: <strong>' + t.solved + '</strong> solved</span>' +
+      (levelChoice === 'auto' ? '<span>Auto level: <strong>' + (t.autoLevel === 'higher' ? 'Higher' : 'Foundation') + '</strong></span>' : '');
+  }
+
+  function showFeedback(el, status, message) {
+    const marks = { correct: '✓', wrong: '✗', almost: '~', invalid: '?' };
+    el.innerHTML = '';
+    const box = document.createElement('div');
+    box.className = 'feedback ' + status;
+    const mark = document.createElement('span');
+    mark.className = 'mark';
+    mark.textContent = marks[status];
+    const text = document.createElement('span');
+    text.textContent = message;
+    box.append(mark, text);
+    el.appendChild(box);
+  }
+
+  function logQuestion(solved) {
+    data.log.push({ time: new Date().toISOString(), topic, level: q.level, hints: Math.min(hintsShown, 3), solution: hintsShown >= 4, tries, solved });
+    if (data.log.length > 1000) data.log.shift();
+  }
+
+  // Auto level: up after 3 good answers in a row, down after 2 solutions shown in a row
+  function updateAutoLevel(goodAnswer, gaveUp) {
+    const t = data.topics[topic];
+    let message = '';
+    if (goodAnswer) { t.streak++; t.misses = 0; }
+    else if (gaveUp) { t.misses++; t.streak = 0; }
+    else { t.streak = 0; }
+    if (levelChoice !== 'auto') return '';
+    if (t.streak >= 3 && t.autoLevel === 'foundation') {
+      t.autoLevel = 'higher'; t.streak = 0;
+      message = 'Three in a row! Moving you up to Higher questions.';
+    } else if (t.misses >= 2 && t.autoLevel === 'higher') {
+      t.autoLevel = 'foundation'; t.misses = 0;
+      message = 'Let’s go back to Foundation for a bit to build up confidence.';
+    }
+    return message;
+  }
+
+  $('answer-form').addEventListener('submit', e => {
+    e.preventDefault();
+    if (finished || !$('answer').value.trim()) return;
+    const r = q.check($('answer').value);
+    if (r.status !== 'invalid') tries++;
+    if (r.status === 'correct') {
+      finished = true;
+      const t = data.topics[topic];
+      t.attempted++; t.solved++; t.hintsUsed += hintsShown;
+      session.solved++;
+      let praise = r.message;
+      if (hintsShown === 0) { t.solvedNoHints++; session.noHints++; praise = tries === 1 ? r.message.replace('Correct!', 'Correct, first time with no hints!') : r.message.replace('Correct!', 'Correct, and with no hints!'); }
+      else praise = r.message + ' You used ' + hintsShown + (hintsShown === 1 ? ' hint.' : ' hints.');
+      const levelMsg = updateAutoLevel(hintsShown <= 1, false);
+      logQuestion(true);
+      save();
+      showFeedback($('feedback'), 'correct', praise + (levelMsg ? ' ' + levelMsg : ''));
+      $('answer').disabled = true;
+      $('check-btn').disabled = true;
+      $('next-btn').textContent = 'Next question →';
+      $('next-btn').focus();
+      renderHints();
+      renderTally();
+    } else {
+      let msg = r.message;
+      if (r.status === 'wrong' && tries >= 2 && hintsShown < 3) msg += ' A hint might help.';
+      showFeedback($('feedback'), r.status, msg);
+    }
+  });
+
+  $('hint-btn').addEventListener('click', () => {
+    if (finished) return;
+    hintsShown++;
+    if (hintsShown >= 4) {
+      // The student has seen the full answer, so this question counts as not solved
+      finished = true;
+      const t = data.topics[topic];
+      t.attempted++; t.revealed++; t.hintsUsed += 3;
+      const levelMsg = updateAutoLevel(false, true);
+      logQuestion(false);
+      save();
+      showFeedback($('feedback'), 'invalid', 'Here’s how it works. Read through each step, then try a similar question.' + (levelMsg ? ' ' + levelMsg : ''));
+      $('answer').disabled = true;
+      $('check-btn').disabled = true;
+      $('next-btn').textContent = 'Try a similar question →';
+    }
+    renderHints();
+    // On a phone the hints sit below the question, so bring the new one into view
+    const latest = $('notes').lastElementChild;
+    if (latest && latest.scrollIntoView) latest.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+
+  $('next-btn').addEventListener('click', () => {
+    if (!finished && (tries > 0 || hintsShown > 0)) {
+      // Skipping after trying still counts as an attempt
+      const t = data.topics[topic];
+      t.attempted++; t.hintsUsed += hintsShown;
+      updateAutoLevel(false, false);
+      logQuestion(false);
+      save();
+    }
+    newQuestion();
+    $('answer').focus();
+  });
+
+  $('level-seg').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    levelChoice = b.dataset.level;
+    for (const x of $('level-seg').querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+    newQuestion();
+  });
+
+  $('year-seg').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    yearFilter = b.dataset.year;
+    for (const x of $('year-seg').querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+    refreshTopics();
+  });
+
+  // ---------- Quiz ----------
+  const QUIZ_LENGTH = 8;
+  let quiz = null;
+
+  function quizTopicName(id) {
+    if (id === 'mixed-all' || id === 'mixed') return 'Mixed (everything)';
+    if (id.startsWith('mixed-')) return 'Mixed ' + strandName(id.slice(6));
+    const t = topicById(id);
+    return t ? t.name : id;
+  }
+
+  function quizPool(id) {
+    if (id === 'mixed-all') return M.TOPICS.map(t => t.id);
+    if (id.startsWith('mixed-')) return M.TOPICS.filter(t => t.strand === id.slice(6)).map(t => t.id);
+    return [id];
+  }
+
+  function fillQuizTopics() {
+    let html = '<option value="mixed-all">Mixed: everything</option>';
+    for (const s of M.STRANDS) {
+      html += '<optgroup label="' + s.name + '"><option value="mixed-' + s.id + '">Mixed ' + s.name + '</option>';
+      for (const t of M.TOPICS.filter(x => x.strand === s.id)) html += '<option value="' + t.id + '">' + t.name + ' (' + t.year + ')</option>';
+      html += '</optgroup>';
+    }
+    $('quiz-topic').innerHTML = html;
+  }
+
+  function startQuiz() {
+    const topicId = $('quiz-topic').value;
+    const level = $('quiz-level').value;
+    // Shuffle the topics and go round them, so a mixed quiz covers as many as possible
+    const pool = quizPool(topicId).sort(() => Math.random() - 0.5);
+    const items = [];
+    for (let i = 0; i < QUIZ_LENGTH; i++) items.push({ q: M.generate(pool[i % pool.length], level), given: '', correct: false });
+    quiz = { topic: topicId, level, when: $('quiz-when').value, items, index: 0, started: Date.now() };
+    $('quiz-setup').hidden = true;
+    $('quiz-done').hidden = true;
+    $('quiz-run').hidden = false;
+    showQuizQuestion();
+  }
+
+  function showQuizQuestion() {
+    const item = quiz.items[quiz.index];
+    $('quiz-count').textContent = 'Question ' + (quiz.index + 1) + ' of ' + QUIZ_LENGTH + ' · ' + topicById(item.q.topic).name;
+    $('quiz-badge').textContent = quiz.level === 'higher' ? 'Higher' : 'Foundation';
+    $('quiz-badge').className = 'badge ' + quiz.level;
+    $('quiz-bar').style.width = (quiz.index / QUIZ_LENGTH * 100) + '%';
+    showPrompt($('quiz-prompt'), item.q);
+    $('quiz-answer').value = '';
+    $('quiz-answer').placeholder = TYPING[item.q.kind].placeholder;
+    $('quiz-tip').textContent = TYPING[item.q.kind].tip;
+    makeKeys($('quiz-keys'), $('quiz-answer'), item.q);
+    $('quiz-feedback').innerHTML = '';
+    $('quiz-answer').focus();
+  }
+
+  $('quiz-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = $('quiz-answer').value;
+    if (!input.trim()) return;
+    const item = quiz.items[quiz.index];
+    const r = item.q.check(input);
+    if (r.status === 'invalid') { showFeedback($('quiz-feedback'), 'invalid', r.message); return; }
+    item.given = input;
+    item.correct = r.status === 'correct';
+    quiz.index++;
+    if (quiz.index < QUIZ_LENGTH) showQuizQuestion();
+    else finishQuiz();
+  });
+
+  function finishQuiz() {
+    const score = quiz.items.filter(i => i.correct).length;
+    const seconds = Math.round((Date.now() - quiz.started) / 1000);
+    data.quizzes.push({ time: new Date().toISOString(), topic: quiz.topic, level: quiz.level, when: quiz.when, score, total: QUIZ_LENGTH, seconds });
+    save();
+    $('quiz-run').hidden = true;
+    $('quiz-done').hidden = false;
+    $('quiz-score').textContent = score + ' / ' + QUIZ_LENGTH;
+    $('quiz-summary').textContent = quizTopicName(quiz.topic) + ', ' + (quiz.level === 'higher' ? 'Higher' : 'Foundation') + ', in ' + Math.floor(seconds / 60) + ' min ' + (seconds % 60) + ' s. Saved to My progress.';
+    const rows = quiz.items.map((it, i) =>
+      '<tr><td class="num">' + (i + 1) + '</td><td class="maths">' + esc(it.q.prompt) + '</td><td class="maths">' + esc(it.given) +
+      '</td><td class="maths">' + esc(it.q.answer) + '</td><td class="' + (it.correct ? 'ok">✓' : 'no">✗') + '</td></tr>').join('');
+    $('quiz-review').innerHTML = '<thead><tr><th class="num">#</th><th>Question</th><th>You wrote</th><th>Answer</th><th></th></tr></thead><tbody>' + rows + '</tbody>';
+  }
+
+  $('quiz-start').addEventListener('click', startQuiz);
+  $('quiz-again').addEventListener('click', () => { $('quiz-done').hidden = true; $('quiz-setup').hidden = false; });
+
+  // ---------- Progress ----------
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  }
+
+  const WHEN = { before: 'Before', after: 'After', later: 'Week later', other: 'For fun' };
+
+  function renderProgress() {
+    let rows = '';
+    for (const s of M.STRANDS) {
+      rows += '<tr class="strand-row"><td colspan="7">' + s.name + '</td></tr>';
+      for (const t of M.TOPICS.filter(x => x.strand === s.id)) {
+        const st = data.topics[t.id];
+        const avg = st.attempted ? (st.hintsUsed / st.attempted).toFixed(1) : '–';
+        rows += '<tr><td>' + t.name + ' <span class="muted">' + t.year + '</span></td><td class="num">' + st.attempted + '</td><td class="num">' + st.solved + '</td><td class="num">' + st.solvedNoHints +
+          '</td><td class="num">' + avg + '</td><td class="num">' + st.revealed + '</td><td>' + (st.autoLevel === 'higher' ? 'Higher' : 'Foundation') + '</td></tr>';
+      }
+    }
+    $('topic-table').innerHTML = '<thead><tr><th>Topic</th><th class="num">Tried</th><th class="num">Solved</th><th class="num">No hints</th><th class="num">Hints per question</th><th class="num">Solutions shown</th><th>Auto level</th></tr></thead><tbody>' + rows + '</tbody>';
+
+    if (!data.quizzes.length) {
+      $('quiz-table').innerHTML = '<tbody><tr><td class="muted">No quizzes yet. Take a “before practising” quiz to get your starting score.</td></tr></tbody>';
+    } else {
+      const qrows = data.quizzes.slice().reverse().map(z =>
+        '<tr><td>' + new Date(z.time).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + '</td><td>' + esc(quizTopicName(z.topic)) + '</td><td>' + (z.level === 'higher' ? 'Higher' : 'Foundation') +
+        '</td><td>' + (WHEN[z.when] || '') + '</td><td class="num">' + z.score + ' / ' + z.total + '</td><td class="num">' + Math.round(z.seconds / 60 * 10) / 10 + ' min</td></tr>').join('');
+      $('quiz-table').innerHTML = '<thead><tr><th>Date</th><th>Topic</th><th>Level</th><th>When</th><th class="num">Score</th><th class="num">Time</th></tr></thead><tbody>' + qrows + '</tbody>';
+    }
+
+    // Before vs after comparison for each topic and level
+    const groups = {};
+    for (const z of data.quizzes) {
+      const key = z.topic + '|' + z.level;
+      groups[key] = groups[key] || { before: [], after: [], later: [] };
+      if (groups[key][z.when]) groups[key][z.when].push(z.score / z.total);
+    }
+    const avg = list => list.reduce((a, b) => a + b, 0) / list.length;
+    const lines = [];
+    for (const key in groups) {
+      const g = groups[key];
+      if (!g.before.length || !g.after.length) continue;
+      const [tid, lvl] = key.split('|');
+      const b = Math.round(avg(g.before) * 100), a = Math.round(avg(g.after) * 100);
+      const diff = a - b;
+      lines.push('<p><strong>' + esc(quizTopicName(tid)) + ' (' + (lvl === 'higher' ? 'Higher' : 'Foundation') + ')</strong>: before ' + b + '%, after ' + a + '%, <span class="' + (diff > 0 ? 'ok' : diff < 0 ? 'no' : '') + '">' + (diff > 0 ? '+' : '') + diff + ' points</span>' +
+        (g.later.length ? ', a week later ' + Math.round(avg(g.later) * 100) + '%' : '') + '</p>');
+    }
+    $('compare').innerHTML = lines.join('') || '<p class="muted">Once you have a “before” and an “after” quiz on the same topic and level, the comparison shows up here.</p>';
+    $('progress-msg').innerHTML = '';
+  }
+
+  function csv() {
+    const out = ['type,date,topic,level,when,score,total,seconds,hints,solution_shown,tries,solved'];
+    for (const z of data.quizzes) out.push(['quiz', z.time, z.topic, z.level, z.when, z.score, z.total, z.seconds, '', '', '', ''].join(','));
+    for (const l of data.log) out.push(['practice', l.time, l.topic, l.level, '', '', '', '', l.hints, l.solution, l.tries, l.solved].join(','));
+    return out.join('\n');
+  }
+
+  $('csv-btn').addEventListener('click', () => {
+    const text = csv();
+    const msg = $('progress-msg');
+    const fallback = () => {
+      msg.innerHTML = '<p class="muted">Copying isn’t allowed here. Select all of this text and copy it yourself:</p><textarea class="csv" id="csv-text" readonly></textarea>';
+      const ta = $('csv-text'); ta.value = text; ta.focus(); ta.select();
+    };
+    try {
+      navigator.clipboard.writeText(text).then(() => {
+        msg.innerHTML = '<p class="toast">Copied. Paste it into a spreadsheet, like Google Sheets or Excel.</p>';
+      }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  $('reset-btn').addEventListener('click', () => {
+    const msg = $('progress-msg');
+    msg.innerHTML = '<div class="confirm">Delete all practice and quiz results? This can’t be undone. <button class="btn" id="reset-yes" type="button">Delete everything</button><button class="btn secondary" id="reset-no" type="button">Keep them</button></div>';
+    $('reset-yes').addEventListener('click', () => {
+      data = blankSave(); save(); session = { solved: 0, noHints: 0 };
+      renderProgress(); renderTally();
+      $('progress-msg').innerHTML = '<p class="toast">All progress deleted.</p>';
+    });
+    $('reset-no').addEventListener('click', () => { msg.innerHTML = ''; });
+  });
+
+  // ---------- Tabs ----------
+  function showView(name) {
+    for (const b of document.querySelectorAll('.tabs button')) b.setAttribute('aria-selected', String(b.dataset.view === name));
+    for (const v of ['practise', 'quiz', 'progress']) $('view-' + v).hidden = v !== name;
+    if (name === 'progress') renderProgress();
+  }
+  for (const b of document.querySelectorAll('[data-view]')) b.addEventListener('click', () => showView(b.dataset.view));
+  for (const b of document.querySelectorAll('[data-goto]')) b.addEventListener('click', () => showView(b.dataset.goto));
+
+  // ---------- Start ----------
+  fillQuizTopics();
+  renderStrands();
+  renderTopicChips();
+  renderLearn();
+  newQuestion();
+  if (isPhone()) $('picker').open = false;
+
+  // ---------- Installing as an app ----------
+  // Chrome, Edge and Android offer an install prompt; we show our own button for it.
+  // iPhones and iPads don't, so we explain how to add it from the Share menu instead.
+  const installed = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  let installPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    installPrompt = e;
+    $('install').hidden = false;
+    $('install-btn').hidden = false;
+  });
+  $('install-btn').addEventListener('click', () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    installPrompt.userChoice.finally(() => { installPrompt = null; $('install').hidden = true; });
+  });
+  window.addEventListener('appinstalled', () => { $('install').hidden = true; });
+  if (!installed && /iphone|ipad|ipod/i.test(navigator.userAgent)) {
+    $('install').hidden = false;
+    $('install-tip').textContent = 'To install: tap the Share button, then \u201cAdd to Home Screen\u201d.';
+  }
+
+  // The service worker saves the app's files so it works offline.
+  // It only runs when the app is served from a website (http or https), not from a file.
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    navigator.serviceWorker.register('sw.js').catch(() => { /* offline mode unavailable, the app still works */ });
+  }
+
+  const fromLink = (location.hash || '').slice(1);
+  if (['practise', 'quiz', 'progress'].includes(fromLink)) showView(fromLink);
+})();
+</script>
+</body>
+</html>
